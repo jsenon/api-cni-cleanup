@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-cni-cleanup
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-cni-cleanup
+      version: v.0.0.1
+  template:
+    metadata:
+      labels:
+        app: api-cni-cleanup
+        version: v.0.0.1
+    spec:
+      containers:
+      - name: api-cni-cleanup
+        image: docker.io/jsenon/api-cni-cleanup:latest
+        command: ["./api-cni-cleanup"]
+        args: [serve,--url,http://localhost:8000]
+        imagePullPolicy: Always

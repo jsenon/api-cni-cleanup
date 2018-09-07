@@ -1,0 +1,61 @@
+# Golang CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-go/ for more details
+version: 2
+jobs:
+  build:
+    docker:
+      # specify the version
+      - image: circleci/golang:1.10
+      
+      # Specify service dependencies here if necessary
+      # CircleCI maintains a library of pre-built images
+      # documented at https://circleci.com/docs/2.0/circleci-images/
+      # - image: circleci/postgres:9.4
+
+    #### TEMPLATE_NOTE: go expects specific checkout path representing url
+    #### expecting it in the form of
+    ####   /go/src/github.com/circleci/go-tool
+    ####   /go/src/bitbucket.org/circleci/go-tool
+    working_directory: /go/src/github.com/jsenon/vpncentralmanager
+    steps:
+      - checkout
+      - setup_remote_docker
+
+
+      # specify any bash command here prefixed with `run: `
+      # - run: 
+      #     name: Get dependencies
+      #     command: |
+      #       go get -u github.com/golang/dep/cmd/dep
+      #       dep ensure
+      - run: 
+          name: Test
+          command: |
+            go test -v ./...
+      - run: 
+          name: Lint
+          command: |
+            go get -u github.com/alecthomas/gometalinter
+            gometalinter --install
+            gometalinter ./... --exclude=vendor --exclude=pkg/grpc/pb --deadline=300s
+      - run: 
+          name: Code Coverage
+          command: |
+            bash <(curl -s https://codecov.io/bash)
+      - run: 
+          name: Build App
+          command: |
+            CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build 
+      - run:
+          name: Build application Docker image
+          command: |
+            docker build -t jsenon/vpncentralmanager:latest .
+      - run: 
+          name: DockerHub Login
+          command: |
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+      - run:
+          name: Push to registry
+          command: |
+            docker push $DOCKER_USER/vpncentralmanager:latest
