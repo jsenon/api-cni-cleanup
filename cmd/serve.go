@@ -27,14 +27,14 @@ import (
 
 var loglevel bool
 var jaegerurl string
-var url string
+var api string
 
 // serveCmd represents the serve command
 var serveCmd = &cobra.Command{
-	Use:   "serve",
-	Short: "Launch VPN Server",
-	Long: `Launch VPN Server 
-           which manage config file generation on VPN Servers
+	Use:   "clean",
+	Short: "Launch CNI Cleanner",
+	Long: `Launch CNI Cleanner 
+           which manage CNI oprhane file and generate metrics
            `,
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Logger = log.With().Str("Service", config.Service).Logger()
@@ -56,7 +56,7 @@ var serveCmd = &cobra.Command{
 }
 
 func init() {
-	serveCmd.PersistentFlags().StringVar(&url, "url", "http://localhost:8000", "url:port for dynamoDB")
+	serveCmd.PersistentFlags().StringVar(&api, "api", "internal", "External or Internal K8S cluster")
 	serveCmd.PersistentFlags().StringVar(&jaegerurl, "jaeger", "http://localhost:14268", "Set jaegger collector endpoint")
 	serveCmd.PersistentFlags().BoolVar(&loglevel, "debug", false, "Set log level to Debug")
 	rootCmd.AddCommand(serveCmd)
