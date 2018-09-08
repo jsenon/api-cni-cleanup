@@ -15,49 +15,59 @@
 package cleanner
 
 import (
-	"flag"
+	"context"
 	"fmt"
 	"os"
-	"path/filepath"
 
 	"github.com/rs/zerolog/log"
+
+	k "github.com/jsenon/api-cni-cleanup/pkg/kubernetes"
+	"go.opencensus.io/trace"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/rest"
-	"k8s.io/client-go/tools/clientcmd"
 )
 
-func Cleanner(api string) {
-	var kubeconfig *string
+func Cleanner(ctx context.Context, api string) {
+	_, span := trace.StartSpan(ctx, "(*Server).Cleanner")
+	defer span.End()
+
 	var client *kubernetes.Clientset
+	var err error
 
 	fmt.Println("You have selected api: ", api)
-	// Internal k8s api
-	if api == "internal" {
-		config, err := rest.InClusterConfig()
-		if err != nil {
-			log.Error().Msgf("Error config in cluster api kubernetes: ", err.Error())
-		}
-		client, err = kubernetes.NewForConfig(config)
-		if err != nil {
-			log.Error().Msgf("Error creation clientset kubernetes: ", err.Error())
-		}
-	}
-	// External k8s api based on .kube/config
-	if api == "external" {
-		kubeconfig = flag.String("kubeconfig", filepath.Join(homeDir(), ".kube", "config"), "(optional) absolute path to the kubeconfig file")
-		flag.Parse()
-		config, err := clientcmd.BuildConfigFromFlags("", *kubeconfig)
-		if err != nil {
-			log.Error().Msgf("Error config external cluster api kubernetes: ", err.Error())
-		}
 
-		// create the clientset
-		client, err = kubernetes.NewForConfig(config)
+	switch api := api; api {
+	case "internal":
+		client, err = k.K8sInternal()
 		if err != nil {
-			log.Error().Msgf("Error creation clientset kubernetes: ", err.Error())
+			log.Error().Msgf("Error Call client connection to k8s internal ", err.Error())
 		}
+	case "external":
+		client, err = k.K8SExternal()
+		if err != nil {
+			log.Error().Msgf("Error Call client connection to k8s external ", err.Error())
+		}
+	default:
+		log.Fatal().Msg("Error definition api type")
 	}
-	log.Debug().Msgf("Debug", client)
+
+	// List Pods interface
+	pods, err := client.CoreV1().Pods("").List(metav1.ListOptions{})
+	if err != nil {
+		panic(err.Error())
+	}
+
+	log.Debug().Msgf("Debug", pods.Items)
+	for _, n := range pods.Items {
+		fmt.Println("PodName: ", n.Name)
+		fmt.Println("NodeName: ", n.Spec.NodeName)
+		fmt.Println("PodIP: ", n.Status.PodIP)
+
+		// TODO: Retrieve files on the node
+		// Compare with n.Status.PodIP
+		// Erase if file exist but n.Status.IP does not
+	}
+
 }
 
 func homeDir() string {

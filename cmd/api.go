@@ -20,24 +20,23 @@ import (
 	"runtime"
 
 	"github.com/jsenon/api-cni-cleanup/config"
-
-	"github.com/jsenon/api-cni-cleanup/internal/cleanner"
+	"github.com/jsenon/api-cni-cleanup/pkg/rest"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 )
 
-var loglevel bool
-var jaegerurl string
-var api string
+var loglevel2 bool
+var jaegerurl2 string
+var api2 string
 
 // serveCmd represents the serve command
-var serveCmd = &cobra.Command{
-	Use:   "clean",
-	Short: "Launch CNI Cleanner",
-	Long: `Launch CNI Cleanner 
-           which launch cleanning of cni files
+var apiCmd = &cobra.Command{
+	Use:   "api",
+	Short: "Launch CNI Cleanner API",
+	Long: `Launch CNI Cleanner API Server 
+           which manage CNI oprhane file and generate metrics
            `,
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Logger = log.With().Str("Service", config.Service).Logger()
@@ -54,20 +53,19 @@ var serveCmd = &cobra.Command{
 		}
 		log.Debug().Msg("Log level set to Debug")
 
-		Serve()
+		Start()
 	},
 }
 
 func init() {
-	serveCmd.PersistentFlags().StringVar(&api, "api", "internal", "External or Internal K8S cluster")
-	serveCmd.PersistentFlags().StringVar(&jaegerurl, "jaeger", "http://localhost:14268", "Set jaegger collector endpoint")
-	serveCmd.PersistentFlags().BoolVar(&loglevel, "debug", false, "Set log level to Debug")
-	rootCmd.AddCommand(serveCmd)
+	apiCmd.PersistentFlags().StringVar(&api2, "api", "internal", "External or Internal K8S cluster")
+	apiCmd.PersistentFlags().StringVar(&jaegerurl2, "jaeger", "http://localhost:14268", "Set jaegger collector endpoint")
+	apiCmd.PersistentFlags().BoolVar(&loglevel2, "debug", false, "Set log level to Debug")
+	rootCmd.AddCommand(apiCmd)
 }
 
 // Start the server
-func Serve() {
+func Start() {
 	ctx := context.Background()
-	cleanner.Cleanner(ctx, api)
-
+	rest.ServeRest(ctx)
 }

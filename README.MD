@@ -20,3 +20,7 @@ Kubernetes cluster
 ### TIPS
 
 ### TODO
+
+- [ ] Create New Metric on Prometheus = Count files
+- [ ] Diff IP files and API PodIP
+- [ ] Remove files unused

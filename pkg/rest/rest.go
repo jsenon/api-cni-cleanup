@@ -15,15 +15,17 @@
 package rest
 
 import (
+	"context"
 	"net/http"
 	"runtime"
 
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rs/zerolog/log"
 
 	"github.com/jsenon/api-cni-cleanup/internal/restapi"
 	"go.opencensus.io/exporter/prometheus"
+	"go.opencensus.io/plugin/ochttp"
 	"go.opencensus.io/stats/view"
+	"go.opencensus.io/trace"
 	"go.opencensus.io/zpages"
 )
 
@@ -32,7 +34,12 @@ const (
 )
 
 // ServeRest start API Rest Server
-func ServeRest() {
+func ServeRest(ctx context.Context) {
+	_, span := trace.StartSpan(ctx, "(*Server).ServeRest")
+	defer span.End()
+
+	// ctx := context.Background()
+
 	log.Info().Msg("Start Rest z-Page Server")
 	go func() {
 		mux := http.DefaultServeMux
@@ -47,29 +54,31 @@ func ServeRest() {
 	log.Info().Msg("Start Rest Server")
 	log.Info().Msg("Listening REST on port" + port)
 
+	// Prometheus Forwarder on /metrics
+	pe, err := prometheus.NewExporter(prometheus.Options{
+		Namespace: "apicnicleanup",
+	})
+	if err != nil {
+		log.Fatal().Msgf("Failed to create Prometheus exporter: %v", err)
+	}
+	view.RegisterExporter(pe)
+
+	// Register trace
+	trace.ApplyConfig(trace.Config{DefaultSampler: trace.AlwaysSample()})
+
 	// API Part
 	// Start Muxer
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/healthz", restapi.Health)
 	mux.HandleFunc("/.well-known", restapi.WellKnownFingerHandler)
+	mux.Handle("/metrics", pe)
 
-	// Metrics REST on /restmetrics
-	mux.Handle("/restmetrics", promhttp.Handler())
-
-	// Prometheus Forwarder on /metrics
-	prefix := "vpncentralmanager"
-	promexporter, err := prometheus.NewExporter(prometheus.Options{
-		Namespace: prefix,
-	})
-	if err != nil {
-		log.Error().Msgf("Error %s", err.Error())
-		runtime.Goexit()
+	h := &ochttp.Handler{Handler: mux}
+	if err := view.Register(ochttp.DefaultServerViews...); err != nil {
+		log.Fatal().Msg("Failed to register ochttp.DefaultServerViews")
 	}
-	view.RegisterExporter(promexporter)
-	mux.Handle("/metrics", promexporter)
-
-	err = http.ListenAndServe(port, mux)
+	http.ListenAndServe(port, h)
 	if err != nil {
 		log.Error().Msgf("Error %s", err.Error())
 		runtime.Goexit()
