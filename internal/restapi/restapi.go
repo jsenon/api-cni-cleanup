@@ -15,12 +15,16 @@
 package restapi
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"runtime"
 	"strconv"
 
+	"github.com/jsenon/api-cni-cleanup/internal/calc"
 	"github.com/rs/zerolog/log"
+	"github.com/spf13/viper"
+	"go.opencensus.io/trace"
 )
 
 type healthCheckResponse struct {
@@ -85,4 +89,13 @@ func writeJSONResponse(w http.ResponseWriter, status int, data []byte) {
 		log.Error().Msgf("Error %s", err.Error())
 		runtime.Goexit()
 	}
+}
+
+func CountFile(w http.ResponseWriter, _ *http.Request) {
+	ctx := context.Background()
+	_, span := trace.StartSpan(ctx, "(*api).CountFile")
+	defer span.End()
+
+	nbrfiles.StatsFiles(ctx, viper.GetString("cnifiles"))
+
 }

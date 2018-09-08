@@ -22,6 +22,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/jsenon/api-cni-cleanup/internal/restapi"
+
 	"go.opencensus.io/exporter/prometheus"
 	"go.opencensus.io/plugin/ochttp"
 	"go.opencensus.io/stats/view"
@@ -35,7 +36,7 @@ const (
 
 // ServeRest start API Rest Server
 func ServeRest(ctx context.Context) {
-	_, span := trace.StartSpan(ctx, "(*Server).ServeRest")
+	_, span := trace.StartSpan(ctx, "(*api).ServeRest")
 	defer span.End()
 
 	// ctx := context.Background()
@@ -51,6 +52,14 @@ func ServeRest(ctx context.Context) {
 			runtime.Goexit()
 		}
 	}()
+
+	// TODO: to be removed
+	// log.Debug().Msgf("Debug CNI file before counting: ", viper.GetString("cnifiles"))
+	// err := nbrfiles.CountFile(ctx, viper.GetString("cnifiles"))
+	// if err != nil {
+	// 	log.Fatal().Msgf("Failed to count file: %v", err)
+	// }
+
 	log.Info().Msg("Start Rest Server")
 	log.Info().Msg("Listening REST on port" + port)
 
@@ -73,6 +82,9 @@ func ServeRest(ctx context.Context) {
 	mux.HandleFunc("/healthz", restapi.Health)
 	mux.HandleFunc("/.well-known", restapi.WellKnownFingerHandler)
 	mux.Handle("/metrics", pe)
+
+	// Use for debuging
+	mux.HandleFunc("/file", restapi.CountFile)
 
 	h := &ochttp.Handler{Handler: mux}
 	if err := view.Register(ochttp.DefaultServerViews...); err != nil {

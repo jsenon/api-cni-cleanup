@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// BATCH MODE
+
 package cmd
 
 import (
@@ -26,11 +28,10 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
-var loglevel bool
-var jaegerurl string
-var api string
+var folder string
 
 // serveCmd represents the serve command
 var serveCmd = &cobra.Command{
@@ -53,21 +54,20 @@ var serveCmd = &cobra.Command{
 			}
 		}
 		log.Debug().Msg("Log level set to Debug")
-
-		Serve()
+		log.Debug().Msgf("Folder to watch: %s", viper.GetString("cnifiles"))
+		folder := viper.GetString("cnifiles")
+		Serve(folder)
 	},
 }
 
 func init() {
 	serveCmd.PersistentFlags().StringVar(&api, "api", "internal", "External or Internal K8S cluster")
-	serveCmd.PersistentFlags().StringVar(&jaegerurl, "jaeger", "http://localhost:14268", "Set jaegger collector endpoint")
-	serveCmd.PersistentFlags().BoolVar(&loglevel, "debug", false, "Set log level to Debug")
 	rootCmd.AddCommand(serveCmd)
 }
 
 // Start the server
-func Serve() {
+func Serve(folder string) {
 	ctx := context.Background()
-	cleanner.Cleanner(ctx, api)
+	cleanner.Cleanner(ctx, api, folder)
 
 }

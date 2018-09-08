@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// API Mode
+
 package cmd
 
 import (
@@ -25,11 +27,8 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
-
-var loglevel2 bool
-var jaegerurl2 string
-var api2 string
 
 // serveCmd represents the serve command
 var apiCmd = &cobra.Command{
@@ -52,15 +51,13 @@ var apiCmd = &cobra.Command{
 			}
 		}
 		log.Debug().Msg("Log level set to Debug")
-
+		log.Debug().Msgf("Folder to watch: %s", viper.GetString("cnifiles"))
 		Start()
 	},
 }
 
 func init() {
-	apiCmd.PersistentFlags().StringVar(&api2, "api", "internal", "External or Internal K8S cluster")
-	apiCmd.PersistentFlags().StringVar(&jaegerurl2, "jaeger", "http://localhost:14268", "Set jaegger collector endpoint")
-	apiCmd.PersistentFlags().BoolVar(&loglevel2, "debug", false, "Set log level to Debug")
+
 	rootCmd.AddCommand(apiCmd)
 }
 

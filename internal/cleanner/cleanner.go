@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Perform cleanning of cnifiles
+
 package cleanner
 
 import (
@@ -27,8 +29,8 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
-func Cleanner(ctx context.Context, api string) {
-	_, span := trace.StartSpan(ctx, "(*Server).Cleanner")
+func Cleanner(ctx context.Context, api string, cnifile string) {
+	_, span := trace.StartSpan(ctx, "(*serve).Cleanner")
 	defer span.End()
 
 	var client *kubernetes.Clientset

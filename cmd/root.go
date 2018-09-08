@@ -22,10 +22,14 @@ import (
 )
 
 var cfgFile string
+var loglevel bool
+var jaegerurl string
+var api string
+var cnifiles string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "CNI Cleanner",
+	Use:   "api-cni-cleanup",
 	Short: "CNI Cleanner ",
 	Long: `CNI File Cleanner and Monitoring
 `,
@@ -44,8 +48,13 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
+	rootCmd.PersistentFlags().StringVar(&api, "api", "internal", "External or Internal K8S cluster")
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.vpncentralmanager.yaml)")
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.PersistentFlags().StringVar(&jaegerurl, "jaeger", "http://localhost:14268", "Set jaegger collector endpoint")
+	rootCmd.PersistentFlags().BoolVar(&loglevel, "debug", false, "Set log level to Debug")
+	rootCmd.PersistentFlags().StringVar(&cnifiles, "cnifiles", "/var/lib/cni", "Set CNI Folder")
+	viper.BindPFlag("cnifiles", rootCmd.PersistentFlags().Lookup("cnifiles"))
+
 }
 
 // initConfig reads in config file and ENV variables if set.
