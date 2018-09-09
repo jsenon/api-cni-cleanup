@@ -76,15 +76,15 @@ func StatsFiles(ctx context.Context, cnifiles string) error {
 			foldersize = 0
 			for _, f := range files {
 				// log.Debug().Msgf("File Name: %s File size %d", f.Name(), f.Size())
-				if f.IsDir() {
+				if !f.IsDir() {
 					nbrfile = nbrfile + 1
 					folderoldsize = f.Size()
 					foldersize = foldersize + folderoldsize
 				}
 			}
-			// log.Debug().Msgf("File size %d", foldersize)
-
+			log.Debug().Msgf("File size %d, File Number %d", foldersize, nbrfile)
 			stats.Record(ctx, nbr.M(nbrfile), size.M(foldersize))
+			time.Sleep(1 * time.Second)
 		}
 	}()
 	return nil

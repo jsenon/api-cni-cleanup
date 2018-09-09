@@ -57,6 +57,10 @@ func init() {
 	if err != nil {
 		log.Error().Msgf("Error binding cnifiles value: ", err.Error())
 	}
+	err = viper.BindPFlag("api", rootCmd.PersistentFlags().Lookup("api"))
+	if err != nil {
+		log.Error().Msgf("Error binding api value: ", err.Error())
+	}
 
 }
 

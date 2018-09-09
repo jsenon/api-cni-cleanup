@@ -59,13 +59,15 @@ var serveCmd = &cobra.Command{
 }
 
 func init() {
-	serveCmd.PersistentFlags().StringVar(&api, "api", "internal", "External or Internal K8S cluster")
 	rootCmd.AddCommand(serveCmd)
 }
 
-// Serve Start the server
+// Serve Start batch cleanning
 func Serve(folder string) {
 	ctx := context.Background()
-	cleanner.Cleanner(ctx, api, folder)
+	err := cleanner.Cleanner(ctx, api, folder)
+	if err != nil {
+		log.Error().Msgf("Error %s", err.Error())
+	}
 
 }

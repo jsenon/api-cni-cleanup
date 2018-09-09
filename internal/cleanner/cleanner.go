@@ -18,7 +18,6 @@ package cleanner
 
 import (
 	"context"
-	"fmt"
 	"io/ioutil"
 
 	"github.com/rs/zerolog/log"
@@ -32,41 +31,45 @@ import (
 var nbrfile int64
 
 // Cleanner will clean cni folder by deleting file if pod don't exist
-func Cleanner(ctx context.Context, api string, cnifiles string) { // nolinter : gocyclo
+func Cleanner(ctx context.Context, api string, cnifiles string) error { // nolinter : gocyclo
 	_, span := trace.StartSpan(ctx, "(*serve).Cleanner")
 	defer span.End()
 
 	var client *kubernetes.Clientset
 	var err error
 
-	fmt.Println("You have selected api: ", api)
+	log.Debug().Msgf("You have selected api: %s", api)
 
 	switch api := api; api {
 	case "internal":
 		client, err = k.K8sInternal()
 		if err != nil {
 			log.Error().Msgf("Error Call client connection to k8s internal ", err.Error())
+			return err
 		}
 	case "external":
 		client, err = k.K8SExternal()
 		if err != nil {
 			log.Error().Msgf("Error Call client connection to k8s external ", err.Error())
+			return err
 		}
 	default:
 		log.Fatal().Msg("Error definition api type")
+		return err
 	}
 
 	// List Pods interface
 	pods, err := client.CoreV1().Pods("").List(metav1.ListOptions{})
 	if err != nil {
-		panic(err.Error())
+		log.Fatal().Msg("Error listing pod")
+		return err
 	}
 
-	log.Debug().Msgf("Debug", pods.Items)
+	// log.Debug().Msgf("Debug", pods.Items)
 	for _, n := range pods.Items {
-		fmt.Println("PodName: ", n.Name)
-		fmt.Println("NodeName: ", n.Spec.NodeName)
-		fmt.Println("PodIP: ", n.Status.PodIP)
+		log.Debug().Msgf("PodName: %s", n.Name)
+		log.Debug().Msgf("NodeName: %s", n.Spec.NodeName)
+		log.Debug().Msgf("PodIP: %s", n.Status.PodIP)
 
 		// TODO: Retrieve files on the node
 		// Compare with n.Status.PodIP
@@ -74,6 +77,7 @@ func Cleanner(ctx context.Context, api string, cnifiles string) { // nolinter : 
 		files, err := ioutil.ReadDir(cnifiles)
 		if err != nil {
 			log.Fatal().Msgf("Failed to read folder: %v", err)
+			return err
 		}
 		nbrfile = 0
 		for _, f := range files {
@@ -86,5 +90,5 @@ func Cleanner(ctx context.Context, api string, cnifiles string) { // nolinter : 
 			}
 		}
 	}
-
+	return nil
 }

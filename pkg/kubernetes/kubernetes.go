@@ -31,7 +31,7 @@ func K8sInternal() (client *kubernetes.Clientset, err error) {
 func K8SExternal() (client *kubernetes.Clientset, err error) {
 	kubeconfig := flag.String("kubeconfig", filepath.Join(homeDir(), ".kube", "config"), "(optional) absolute path to the kubeconfig file")
 	flag.Parse()
-	log.Debug().Msgf("Flag Kubeconfig: ", &kubeconfig)
+	// log.Debug().Msgf("Flag Kubeconfig: %s", &kubeconfig)
 	config, err := clientcmd.BuildConfigFromFlags("", *kubeconfig)
 	log.Debug().Msg("Received config object k8s")
 	if err != nil {

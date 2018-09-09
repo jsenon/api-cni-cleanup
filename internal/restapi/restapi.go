@@ -15,10 +15,15 @@
 package restapi
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"runtime"
 	"strconv"
+
+	"github.com/jsenon/api-cni-cleanup/internal/cleanner"
+	"github.com/spf13/viper"
+	"go.opencensus.io/trace"
 
 	"github.com/rs/zerolog/log"
 )
@@ -85,6 +90,28 @@ func writeJSONResponse(w http.ResponseWriter, status int, data []byte) {
 		log.Error().Msgf("Error %s", err.Error())
 		runtime.Goexit()
 	}
+}
+
+func Cleanner(w http.ResponseWriter, _ *http.Request) {
+	ctx := context.Background()
+	_, span := trace.StartSpan(ctx, "(*api).CountFile")
+	defer span.End()
+	cnifiles := viper.GetString("cnifiles")
+	api := viper.GetString("api")
+	err := cleanner.Cleanner(ctx, api, cnifiles)
+	if err != nil {
+		log.Error().Msgf("Error %s", err.Error())
+		data, err := json.Marshal(healthCheckResponse{Status: "Error"})
+		if err != nil {
+			log.Error().Msgf("Error %s", err.Error())
+		}
+		writeJSONResponse(w, http.StatusProcessing, data)
+	}
+	data, err := json.Marshal(healthCheckResponse{Status: "Done"})
+	if err != nil {
+		log.Error().Msgf("Error %s", err.Error())
+	}
+	writeJSONResponse(w, http.StatusOK, data)
 }
 
 // Used for debug

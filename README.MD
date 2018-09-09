@@ -84,4 +84,5 @@ Vendoring [constraint](https://github.com/kubernetes/minikube/issues/3037#issuec
 - [x] Create New Metric on Prometheus = Count files + Folder Size
 - [x] Diff IP files and API PodIP
 - [ ] Remove files unused
-- [ ] Api to launch cleanup
+- [x] Api to launch cleanup
+- [ ] k8s deployment: DaemonSet + svc + Cronjob

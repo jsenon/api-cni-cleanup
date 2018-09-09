@@ -75,6 +75,7 @@ func ServeRest(ctx context.Context) {
 	mux.HandleFunc("/healthz", restapi.Health)
 	mux.HandleFunc("/.well-known", restapi.WellKnownFingerHandler)
 	mux.Handle("/metrics", pe)
+	mux.HandleFunc("/cleanup", restapi.Cleanner)
 
 	// Use for debuging
 	// mux.HandleFunc("/file", restapi.CountFile)
