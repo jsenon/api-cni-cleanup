@@ -29,7 +29,7 @@ build:
 lint:
 	go get -u github.com/alecthomas/gometalinter
 	gometalinter --install
-	gometalinter ./... --exclude=vendor --deadline=300s
+	gometalinter ./... --vendor --deadline=300s
 
 #-----------------------------------------------------------------------------
 # PUBLISH

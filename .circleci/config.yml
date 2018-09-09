@@ -38,7 +38,7 @@ jobs:
           command: |
             go get -u github.com/alecthomas/gometalinter
             gometalinter --install
-            gometalinter ./... --exclude=vendor --exclude=pkg/grpc/pb --deadline=360s
+            gometalinter ./... --vendor --deadline=360s
       - run: 
           name: Code Coverage
           command: |
