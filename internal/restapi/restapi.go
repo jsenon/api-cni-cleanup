@@ -92,6 +92,7 @@ func writeJSONResponse(w http.ResponseWriter, status int, data []byte) {
 	}
 }
 
+// Cleanner will launch cleanning
 func Cleanner(w http.ResponseWriter, _ *http.Request) {
 	ctx := context.Background()
 	_, span := trace.StartSpan(ctx, "(*api).CountFile")
@@ -101,9 +102,9 @@ func Cleanner(w http.ResponseWriter, _ *http.Request) {
 	err := cleanner.Cleanner(ctx, api, cnifiles)
 	if err != nil {
 		log.Error().Msgf("Error %s", err.Error())
-		data, err := json.Marshal(healthCheckResponse{Status: "Error"})
-		if err != nil {
-			log.Error().Msgf("Error %s", err.Error())
+		data, errmarsh := json.Marshal(healthCheckResponse{Status: "Error"})
+		if errmarsh != nil {
+			log.Error().Msgf("Error %s", errmarsh.Error())
 		}
 		writeJSONResponse(w, http.StatusProcessing, data)
 	}
