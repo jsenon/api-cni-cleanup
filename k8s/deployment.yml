@@ -2,6 +2,9 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: "9090"
   name: api-cni-cleanup
   labels:
     app: api-cni-cleanup
@@ -34,6 +37,7 @@ spec:
           - containerPort: 9010
             # hostPort: 39010
             protocol: http
+        # hostNetwork: true
       volumes:
       - name: varcni
         hostPath:
@@ -43,7 +47,24 @@ spec:
           path: /var/run/docker.socks
 ----
 # SVC
-
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    prometheus.io/scrape: 'true'
+  labels:
+    name: api-cni-cleanup
+    kubernetes.io/name: "Apicnicleanup"
+  name: api-cni-cleanup
+spec:
+  selector:
+    app: api-cni-cleanup
+  #type: NodePort
+  ports:
+  - name: api-cni-cleanup
+    protocol: TCP
+    port: 9010
+    targetPort: 9010
 ----
 # Cronjob
 apiVersion: batch/v1beta1
