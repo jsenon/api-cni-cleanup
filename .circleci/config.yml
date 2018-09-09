@@ -17,7 +17,7 @@ jobs:
     #### expecting it in the form of
     ####   /go/src/github.com/circleci/go-tool
     ####   /go/src/bitbucket.org/circleci/go-tool
-    working_directory: /go/src/github.com/jsenon/vpncentralmanager
+    working_directory: /go/src/github.com/jsenon/api-cni-cleanup
     steps:
       - checkout
       - setup_remote_docker
@@ -50,7 +50,7 @@ jobs:
       - run:
           name: Build application Docker image
           command: |
-            docker build -t jsenon/vpncentralmanager:latest .
+            docker build -t jsenon/api-cni-cleanup:latest .
       - run: 
           name: DockerHub Login
           command: |
@@ -58,4 +58,4 @@ jobs:
       - run:
           name: Push to registry
           command: |
-            docker push $DOCKER_USER/vpncentralmanager:latest
+            docker push $DOCKER_USER/api-cni-cleanup:latest
