@@ -33,6 +33,12 @@ API and Prometheus Metrics:
 api-cni-cleanup server --api APITYPE --cnifiles YOURCNIFOLDER
 ```
 
+Contact API CNI Cleanner
+```sh
+api-cni-cleanup job --urlserver http://127.0.0.1:9010/cleanup
+```
+
+
 ### Usage
 
 ```sh
@@ -44,6 +50,7 @@ Usage:
 Available Commands:
   clean       Launch CNI Cleanner
   help        Help about any command
+  job         Job Cleanner
   server      Launch CNI Cleanner Server
 
 Flags:
