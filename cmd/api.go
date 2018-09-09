@@ -22,6 +22,7 @@ import (
 	"runtime"
 
 	"github.com/jsenon/api-cni-cleanup/config"
+	"github.com/jsenon/api-cni-cleanup/internal/calc"
 	"github.com/jsenon/api-cni-cleanup/pkg/rest"
 
 	"github.com/rs/zerolog"
@@ -64,5 +65,8 @@ func init() {
 // Start the server
 func Start() {
 	ctx := context.Background()
+
+	nbrfiles.StatsFiles(ctx, viper.GetString("cnifiles"))
+
 	rest.ServeRest(ctx)
 }

@@ -19,6 +19,7 @@ package cleanner
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"os"
 
 	"github.com/rs/zerolog/log"
@@ -29,7 +30,11 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
-func Cleanner(ctx context.Context, api string, cnifile string) {
+var nbrfile int64
+var folderoldsize int64
+var foldersize int64
+
+func Cleanner(ctx context.Context, api string, cnifiles string) {
 	_, span := trace.StartSpan(ctx, "(*serve).Cleanner")
 	defer span.End()
 
@@ -68,6 +73,20 @@ func Cleanner(ctx context.Context, api string, cnifile string) {
 		// TODO: Retrieve files on the node
 		// Compare with n.Status.PodIP
 		// Erase if file exist but n.Status.IP does not
+		files, err := ioutil.ReadDir(cnifiles)
+		if err != nil {
+			log.Fatal().Msgf("Failed to read folder: %v", err)
+		}
+		nbrfile = 0
+		for _, f := range files {
+			// If a cni file named with ip pod exist and a pod have this IP
+			if f.Name() == n.Status.PodIP {
+				log.Debug().Msg("Pod Exist is running, don't erase file")
+			} else {
+				// A file exist but no Pod hve this IP
+				log.Debug().Msg("Pod don't run, erase file")
+			}
+		}
 	}
 
 }

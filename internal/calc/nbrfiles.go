@@ -18,59 +18,69 @@ package nbrfiles
 
 import (
 	"context"
+	"io/ioutil"
+	"time"
 
 	"github.com/rs/zerolog/log"
 
 	"go.opencensus.io/stats"
 	"go.opencensus.io/stats/view"
-	"go.opencensus.io/tag"
 	"go.opencensus.io/trace"
 )
 
-var (
-	// Size of file
-	MSize = stats.Int64("file/size", "The Size of file", "KBs")
+var nbrfile int64
+var folderoldsize int64
+var foldersize int64
 
-	// Counts the number of file
-	MFile = stats.Int64("file/nbre", "The number of file in folder", "1")
-)
-
-var (
-	KeyMethod, _ = tag.NewKey("cni")
-)
-
-var (
-	FileView = &view.View{
-		Name:        "cni/size",
-		Measure:     MSize,
-		Description: "The size of files",
-		Aggregation: view.Count(),
-	}
-
-	LineCountView = &view.View{
-		Name:        "cni/number",
-		Measure:     MFile,
-		Description: "The number of files",
-		Aggregation: view.Count(),
-	}
-)
-
-func StatsFiles(ctx context.Context, cnifile string) error {
+func StatsFiles(ctx context.Context, cnifiles string) error {
 	_, span := trace.StartSpan(ctx, "(*api).StatsFiles")
 	defer span.End()
-	ctx2, err := tag.New(context.Background(), tag.Insert(KeyMethod, "file"))
 
-	if err != nil {
-		return err
+	// New Metrics Number of file in CNI Folder
+	nbr := stats.Int64("cni/file/nbre", "Number of File", "")
+	viewCount := &view.View{
+		Name:        "number_count",
+		Description: "number of files",
+		TagKeys:     nil,
+		Measure:     nbr,
+		Aggregation: view.LastValue(),
 	}
-	if err := view.Register(FileView, LineCountView); err != nil {
-		log.Fatal().Msgf("Failed to register views: %v", err)
+	// New Metrics Size of CNI Folder
+	size := stats.Int64("cni/file/size", "Size of folder", "Bytes")
+	viewSize := &view.View{
+		Name:        "size_bytes",
+		Description: "Size of the folder",
+		TagKeys:     nil,
+		Measure:     size,
+		Aggregation: view.LastValue(),
 	}
-	// Fake Values
-	stats.Record(ctx2, MSize.M(1), MFile.M(2))
+	view.Register(viewCount, viewSize)
+	view.SetReportingPeriod(10 * time.Second)
+	log.Debug().Msgf("Time Reporting: %d", 10*time.Second)
 
-	// TODO count number of files
-	// TODO records size of files
+	go func() {
+		log.Debug().Msgf("Entering into go func for counting number of file in %s", cnifiles)
+		log.Debug().Msgf("Entering into go func for size of folder %s", cnifiles)
 
+		for {
+			files, err := ioutil.ReadDir(cnifiles)
+			if err != nil {
+				log.Fatal().Msgf("Failed to read folder: %v", err)
+			}
+			nbrfile = 0
+			foldersize = 0
+			for _, f := range files {
+				// log.Debug().Msgf("File Name: %s File size %d", f.Name(), f.Size())
+				if f.IsDir() != true {
+					nbrfile = nbrfile + 1
+					folderoldsize = f.Size()
+					foldersize = foldersize + folderoldsize
+				}
+			}
+			// log.Debug().Msgf("File size %d", foldersize)
+
+			stats.Record(ctx, nbr.M(nbrfile), size.M(foldersize))
+		}
+	}()
 	return nil
 }

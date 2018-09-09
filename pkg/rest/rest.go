@@ -53,13 +53,6 @@ func ServeRest(ctx context.Context) {
 		}
 	}()
 
-	// TODO: to be removed
-	// log.Debug().Msgf("Debug CNI file before counting: ", viper.GetString("cnifiles"))
-	// err := nbrfiles.CountFile(ctx, viper.GetString("cnifiles"))
-	// if err != nil {
-	// 	log.Fatal().Msgf("Failed to count file: %v", err)
-	// }
-
 	log.Info().Msg("Start Rest Server")
 	log.Info().Msg("Listening REST on port" + port)
 
@@ -84,7 +77,7 @@ func ServeRest(ctx context.Context) {
 	mux.Handle("/metrics", pe)
 
 	// Use for debuging
-	mux.HandleFunc("/file", restapi.CountFile)
+	// mux.HandleFunc("/file", restapi.CountFile)
 
 	h := &ochttp.Handler{Handler: mux}
 	if err := view.Register(ochttp.DefaultServerViews...); err != nil {
