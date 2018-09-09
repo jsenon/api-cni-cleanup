@@ -30,7 +30,7 @@ api-cni-cleanup clean --api APITYPE --cnifiles YOURCNIFOLDER
 API and Prometheus Metrics:
 
 ```sh
-api-cni-cleanup 
+api-cni-cleanup server --api APITYPE --cnifiles YOURCNIFOLDER
 ```
 
 ### Usage
@@ -42,14 +42,14 @@ Usage:
   api-cni-cleanup [command]
 
 Available Commands:
-  api         Launch CNI Cleanner API
   clean       Launch CNI Cleanner
   help        Help about any command
+  server      Launch CNI Cleanner Server
 
 Flags:
       --api string        External or Internal K8S cluster (default "internal")
       --cnifiles string   Set CNI Folder (default "/var/lib/cni")
-      --config string     config file (default is $HOME/.vpncentralmanager.yaml)
+      --config string     config file (default is $HOME/.api-cni-cleanup.yaml)
       --debug             Set log level to Debug
   -h, --help              help for api-cni-cleanup
       --jaeger string     Set jaegger collector endpoint (default "http://localhost:14268")

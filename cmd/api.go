@@ -33,10 +33,10 @@ import (
 
 // serveCmd represents the serve command
 var apiCmd = &cobra.Command{
-	Use:   "api",
-	Short: "Launch CNI Cleanner API",
+	Use:   "server",
+	Short: "Launch CNI Cleanner Server",
 	Long: `Launch CNI Cleanner API Server 
-           which manage CNI oprhane file and generate metrics
+           which manage CNI oprhane file and promtheus metrics
            `,
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Logger = log.With().Str("Service", config.Service).Logger()
