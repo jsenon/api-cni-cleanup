@@ -36,11 +36,8 @@ const (
 
 // ServeRest start API Rest Server
 func ServeRest(ctx context.Context) {
-	_, span := trace.StartSpan(ctx, "(*api).ServeRest")
+	_, span := trace.StartSpan(ctx, "(*cniserver).ServeRest")
 	defer span.End()
-
-	// ctx := context.Background()
-
 	log.Info().Msg("Start Rest z-Page Server")
 	go func() {
 		mux := http.DefaultServeMux

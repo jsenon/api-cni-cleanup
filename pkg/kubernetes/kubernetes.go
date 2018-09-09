@@ -1,17 +1,21 @@
 package kubernetes
 
 import (
+	"context"
 	"os"
 	"path/filepath"
 
 	"github.com/rs/zerolog/log"
+	"go.opencensus.io/trace"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 )
 
 // K8sInternal Connect to Internal k8s Cluster
-func K8sInternal() (client *kubernetes.Clientset, err error) {
+func K8sInternal(ctx context.Context) (client *kubernetes.Clientset, err error) {
+	_, span := trace.StartSpan(ctx, "(*cniserver).K8sInternal")
+	defer span.End()
 	config, err := rest.InClusterConfig()
 	log.Debug().Msg("Received config object k8s")
 	if err != nil {
@@ -27,8 +31,10 @@ func K8sInternal() (client *kubernetes.Clientset, err error) {
 }
 
 // K8SExternal Connect to External k8s Cluster
-func K8SExternal() (client *kubernetes.Clientset, err error) {
-	kubeconfig := filepath.Join(homeDir(), ".kube", "config")
+func K8SExternal(ctx context.Context) (client *kubernetes.Clientset, err error) {
+	_, span := trace.StartSpan(ctx, "(*cniserver).K8SExternal")
+	defer span.End()
+	kubeconfig := filepath.Join(homeDir(ctx), ".kube", "config")
 	log.Debug().Msgf("Kubeconfig: %s", kubeconfig)
 	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
 	if err != nil {
@@ -48,7 +54,9 @@ func K8SExternal() (client *kubernetes.Clientset, err error) {
 }
 
 // homeDir set home directory
-func homeDir() string {
+func homeDir(ctx context.Context) string {
+	_, span := trace.StartSpan(ctx, "(*cniserver).homeDir")
+	defer span.End()
 	if h := os.Getenv("HOME"); h != "" {
 		return h
 	}

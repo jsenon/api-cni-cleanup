@@ -32,7 +32,7 @@ var nbrfile int64
 
 // Cleanner will clean cni folder by deleting file if pod don't exist
 func Cleanner(ctx context.Context, api string, cnifiles string) error { // nolinter : gocyclo
-	_, span := trace.StartSpan(ctx, "(*serve).Cleanner")
+	_, span := trace.StartSpan(ctx, "(*cniserver).Cleanner")
 	defer span.End()
 
 	var client *kubernetes.Clientset
@@ -42,13 +42,13 @@ func Cleanner(ctx context.Context, api string, cnifiles string) error { // nolin
 
 	switch api := api; api {
 	case "internal":
-		client, err = k.K8sInternal()
+		client, err = k.K8sInternal(ctx)
 		if err != nil {
 			log.Error().Msgf("Error Call client connection to k8s internal ", err.Error())
 			return err
 		}
 	case "external":
-		client, err = k.K8SExternal()
+		client, err = k.K8SExternal(ctx)
 		if err != nil {
 			log.Error().Msgf("Error Call client connection to k8s external ", err.Error())
 			return err
