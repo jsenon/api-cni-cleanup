@@ -4,40 +4,18 @@
 [![CircleCI](https://circleci.com/gh/jsenon/api-cni-cleanup.svg?style=svg)](https://circleci.com/gh/jsenon/api-cni-cleanup)
 [![Go Report Card](https://goreportcard.com/badge/github.com/jsenon/api-cni-cleanup)](https://goreportcard.com/report/github.com/jsenon/api-cni-cleanup)
 
-UNDER DEVELOPMENT
-
 ## Func
 
 - Remove unecessary cni file on kubernetes nodes (Running Pod/Orphaned Pod)
 - Exports CNI file number in Prometheus endpoint
-- Support Opentracing
-
+- Use Opencensus for tracing and metrics support
 
 ### Prerequisite
 
-Kubernetes cluster
+This application must run inside kubernetes cluster
+It's recommended to run it must on Daemonset in order to access to all nodes where the cni files are located.
 
-### Launch Development Env
-
-### Run
-
-Batch Mode cleaning:
-
-```sh
-api-cni-cleanup clean --api APITYPE --cnifiles YOURCNIFOLDER
-```
-
-API and Prometheus Metrics:
-
-```sh
-api-cni-cleanup server --api APITYPE --cnifiles YOURCNIFOLDER
-```
-
-Contact API CNI Cleanner
-```sh
-api-cni-cleanup job --urlserver http://127.0.0.1:9010/cleanup
-```
-
+### Deployment
 
 ### Usage
 
@@ -64,8 +42,15 @@ Flags:
 Use "api-cni-cleanup [command] --help" for more information about a command.
 ```
 
+### Run Server Mode
 
-When you rn with api and prometheus metrics:
+When you launch application in server mode you will have prometheus metrics:
+
+```sh
+api-cni-cleanup server --api APITYPE --cnifiles YOURCNIFOLDER
+```
+
+Prometheus metrics are available on:s
 
 - http://localhost:9010/metrics
 
@@ -80,7 +65,30 @@ apicnicleanup_number_count XX
 apicnicleanup_size_bytes XX
 ```
 
+Api entrypoint to launch the cleaning is:
+
 - http://localhost:9010/cleanup : Delete unecessary cni files
+
+### Run Job Mode
+
+In order to schedule the cleaning with a cronjob you can launch application in job mode:
+
+Contact API CNI Cleanner
+```sh
+api-cni-cleanup job --urlserver http://127.0.0.1:9010/cleanup,http://192.168.0.2:9010/cleanup
+```
+
+Just specify all you `urlserver` that's represent all you api-cni-cleanup servers 
+
+### (OPTIONAL) Run Batch Mode
+
+This application could be launch on demand. But you need to know where your pod is deployed in order to clean cni file on a targeted node.
+
+Batch Mode cleaning:
+
+```sh
+api-cni-cleanup clean --api APITYPE --cnifiles YOURCNIFOLDER
+```
 
 ### TIPS
 
