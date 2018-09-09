@@ -86,7 +86,7 @@ func Health(w http.ResponseWriter, _ *http.Request) {
 
 // writeJsonResponse will convert response to json
 func writeJSONResponse(ctx context.Context, w http.ResponseWriter, status int, data []byte) {
-	ctx, span := trace.StartSpan(ctx, "(*cniserver).writeJSONResponse")
+	_, span := trace.StartSpan(ctx, "(*cniserver).writeJSONResponse")
 	defer span.End()
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Content-Length", strconv.Itoa(len(data)))

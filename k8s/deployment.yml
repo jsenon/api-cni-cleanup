@@ -30,6 +30,10 @@ spec:
             mountPath: /var/lib/cni/networks
           - name: varrundocker
             mountPath: /var/run/docker.sock
+        ports:
+          - containerPort: 9010
+            # hostPort: 39010
+            protocol: http
       volumes:
       - name: varcni
         hostPath:
@@ -38,7 +42,7 @@ spec:
         hostPath:
           path: /var/run/docker.socks
 ----
-# Svc
+# SVC
 
 ----
 # Cronjob
