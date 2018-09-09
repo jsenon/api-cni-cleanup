@@ -1,6 +1,5 @@
 # CNI Cleaner API
 
-
 [![CircleCI](https://circleci.com/gh/jsenon/api-cni-cleanup.svg?style=svg)](https://circleci.com/gh/jsenon/api-cni-cleanup)
 [![Go Report Card](https://goreportcard.com/badge/github.com/jsenon/api-cni-cleanup)](https://goreportcard.com/report/github.com/jsenon/api-cni-cleanup)
 
