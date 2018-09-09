@@ -48,6 +48,8 @@ type wellknownResponse struct {
 
 // WellKnownFingerHandler will provide the information about the service.
 func WellKnownFingerHandler(w http.ResponseWriter, _ *http.Request) {
+	ctx, span := trace.StartSpan(context.Background(), "(*cniserver).WellKnownFingerHandler")
+	defer span.End()
 	item := wellknownResponse{
 		Servicename:        "api-cni-cleanup",
 		Servicedescription: "CNI File Cleanner and Monitoring",
@@ -65,11 +67,13 @@ func WellKnownFingerHandler(w http.ResponseWriter, _ *http.Request) {
 		log.Error().Msgf("Error %s", err.Error())
 		runtime.Goexit()
 	}
-	writeJSONResponse(w, http.StatusOK, data)
+	writeJSONResponse(ctx, w, http.StatusOK, data)
 }
 
 // Health will provide the information about state of the service.
 func Health(w http.ResponseWriter, _ *http.Request) {
+	ctx, span := trace.StartSpan(context.Background(), "(*cniserver).Health")
+	defer span.End()
 	data, err := json.Marshal(healthCheckResponse{Status: "UP"})
 	if err != nil {
 		log.Error().Msgf("Error %s", err.Error())
@@ -77,11 +81,13 @@ func Health(w http.ResponseWriter, _ *http.Request) {
 	}
 	log.Debug().Msgf("Debug Marshall health", data)
 
-	writeJSONResponse(w, http.StatusOK, data)
+	writeJSONResponse(ctx, w, http.StatusOK, data)
 }
 
 // writeJsonResponse will convert response to json
-func writeJSONResponse(w http.ResponseWriter, status int, data []byte) {
+func writeJSONResponse(ctx context.Context, w http.ResponseWriter, status int, data []byte) {
+	ctx, span := trace.StartSpan(ctx, "(*cniserver).writeJSONResponse")
+	defer span.End()
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Content-Length", strconv.Itoa(len(data)))
 	w.WriteHeader(status)
@@ -94,9 +100,8 @@ func writeJSONResponse(w http.ResponseWriter, status int, data []byte) {
 
 // Cleanner will launch cleanning
 func Cleanner(w http.ResponseWriter, _ *http.Request) {
-	ctx := context.Background()
 	log.Debug().Msg("In func Cleanner")
-	_, span := trace.StartSpan(ctx, "(*cniserver).CountFile")
+	ctx, span := trace.StartSpan(context.Background(), "(*cniserver).Cleanner")
 	defer span.End()
 	cnifiles := viper.GetString("cnifiles")
 	api := viper.GetString("api")
@@ -107,13 +112,13 @@ func Cleanner(w http.ResponseWriter, _ *http.Request) {
 		if errmarsh != nil {
 			log.Error().Msgf("Error %s", errmarsh.Error())
 		}
-		writeJSONResponse(w, http.StatusProcessing, data)
+		writeJSONResponse(ctx, w, http.StatusProcessing, data)
 	}
 	data, err := json.Marshal(healthCheckResponse{Status: "Done"})
 	if err != nil {
 		log.Error().Msgf("Error %s", err.Error())
 	}
-	writeJSONResponse(w, http.StatusOK, data)
+	writeJSONResponse(ctx, w, http.StatusOK, data)
 }
 
 // Used for debug

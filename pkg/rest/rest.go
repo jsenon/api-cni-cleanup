@@ -15,7 +15,6 @@
 package rest
 
 import (
-	"context"
 	"net/http"
 	"runtime"
 
@@ -35,9 +34,7 @@ const (
 )
 
 // ServeRest start API Rest Server
-func ServeRest(ctx context.Context) {
-	_, span := trace.StartSpan(ctx, "(*cniserver).ServeRest")
-	defer span.End()
+func ServeRest() {
 	log.Info().Msg("Start Rest z-Page Server")
 	go func() {
 		mux := http.DefaultServeMux

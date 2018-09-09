@@ -80,5 +80,5 @@ func Start() {
 	if err != nil {
 		log.Error().Msgf("Error when retrieving stats for cni folder", err.Error())
 	}
-	rest.ServeRest(ctx)
+	rest.ServeRest()
 }
