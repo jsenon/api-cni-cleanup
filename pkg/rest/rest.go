@@ -80,10 +80,11 @@ func ServeRest(ctx context.Context) {
 	// mux.HandleFunc("/file", restapi.CountFile)
 
 	h := &ochttp.Handler{Handler: mux}
-	if err := view.Register(ochttp.DefaultServerViews...); err != nil {
+	err = view.Register(ochttp.DefaultServerViews...)
+	if err != nil {
 		log.Fatal().Msg("Failed to register ochttp.DefaultServerViews")
 	}
-	http.ListenAndServe(port, h)
+	err = http.ListenAndServe(port, h)
 	if err != nil {
 		log.Error().Msgf("Error %s", err.Error())
 		runtime.Goexit()

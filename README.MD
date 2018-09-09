@@ -1,11 +1,17 @@
 # CNI Cleaner API
 
+
+[![CircleCI](https://circleci.com/gh/jsenon/api-cni-cleanup.svg?style=svg)](https://circleci.com/gh/jsenon/api-cni-cleanup)
+[![Go Report Card](https://goreportcard.com/badge/github.com/jsenon/api-cni-cleanup)](https://goreportcard.com/report/github.com/jsenon/api-cni-cleanup)
+
 UNDER DEVELOPMENT
 
 ## Func
 
 - Remove unecessary cni file on kubernetes nodes (Running Pod/Orphaned Pod)
-- Exports CNI file number in Prometheus endpoint 
+- Exports CNI file number in Prometheus endpoint
+- Support Opentracing
+
 
 ### Prerequisite
 
@@ -15,12 +21,65 @@ Kubernetes cluster
 
 ### Run
 
+Batch Mode cleaning:
+
+```sh
+api-cni-cleanup clean --api APITYPE --cnifiles YOURCNIFOLDER
+```
+
+API and Prometheus Metrics:
+
+```sh
+api-cni-cleanup 
+```
+
 ### Usage
+
+```sh
+CNI File Cleanner and Monitoring
+
+Usage:
+  api-cni-cleanup [command]
+
+Available Commands:
+  api         Launch CNI Cleanner API
+  clean       Launch CNI Cleanner
+  help        Help about any command
+
+Flags:
+      --api string        External or Internal K8S cluster (default "internal")
+      --cnifiles string   Set CNI Folder (default "/var/lib/cni")
+      --config string     config file (default is $HOME/.vpncentralmanager.yaml)
+      --debug             Set log level to Debug
+  -h, --help              help for api-cni-cleanup
+      --jaeger string     Set jaegger collector endpoint (default "http://localhost:14268")
+
+Use "api-cni-cleanup [command] --help" for more information about a command.
+```
+
+
+When you rn with api and prometheus metrics:
+
+- http://localhost:9010/metrics
+
+Stats are:
+
+```
+# HELP apicnicleanup_number_count number of files
+# TYPE apicnicleanup_number_count gauge
+apicnicleanup_number_count XX
+# HELP apicnicleanup_size_bytes Size of the folder
+# TYPE apicnicleanup_size_bytes gauge
+apicnicleanup_size_bytes XX
+```
+
+- http://localhost:9010/clean : Delete unecessary cni files
 
 ### TIPS
 
 ### TODO
 
-- [ ] Create New Metric on Prometheus = Count files
-- [ ] Diff IP files and API PodIP
+- [x] Create New Metric on Prometheus = Count files + Folder Size
+- [x] Diff IP files and API PodIP
 - [ ] Remove files unused
+- [ ] Api to launch cleanup

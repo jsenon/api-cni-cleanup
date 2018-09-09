@@ -29,7 +29,7 @@ build:
 lint:
 	go get -u github.com/alecthomas/gometalinter
 	gometalinter --install
-	gometalinter ./... --exclude=vendor --exclude=pkg/grpc/pb --deadline=60s
+	gometalinter ./... --exclude=vendor --deadline=300s
 
 #-----------------------------------------------------------------------------
 # PUBLISH

@@ -53,7 +53,10 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&jaegerurl, "jaeger", "http://localhost:14268", "Set jaegger collector endpoint")
 	rootCmd.PersistentFlags().BoolVar(&loglevel, "debug", false, "Set log level to Debug")
 	rootCmd.PersistentFlags().StringVar(&cnifiles, "cnifiles", "/var/lib/cni", "Set CNI Folder")
-	viper.BindPFlag("cnifiles", rootCmd.PersistentFlags().Lookup("cnifiles"))
+	err := viper.BindPFlag("cnifiles", rootCmd.PersistentFlags().Lookup("cnifiles"))
+	if err != nil {
+		log.Error().Msgf("Error binding cnifiles value: ", err.Error())
+	}
 
 }
 

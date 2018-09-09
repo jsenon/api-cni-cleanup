@@ -32,6 +32,7 @@ var nbrfile int64
 var folderoldsize int64
 var foldersize int64
 
+// StatsFiles will provide metrics for cni folder: folder size, number of elements
 func StatsFiles(ctx context.Context, cnifiles string) error {
 	_, span := trace.StartSpan(ctx, "(*api).StatsFiles")
 	defer span.End()
@@ -54,7 +55,11 @@ func StatsFiles(ctx context.Context, cnifiles string) error {
 		Measure:     size,
 		Aggregation: view.LastValue(),
 	}
-	view.Register(viewCount, viewSize)
+	err := view.Register(viewCount, viewSize)
+	if err != nil {
+		log.Error().Msgf("Error registering view:", err.Error())
+		return err
+	}
 	view.SetReportingPeriod(10 * time.Second)
 	log.Debug().Msgf("Time Reporting: %d", 10*time.Second)
 
@@ -71,7 +76,7 @@ func StatsFiles(ctx context.Context, cnifiles string) error {
 			foldersize = 0
 			for _, f := range files {
 				// log.Debug().Msgf("File Name: %s File size %d", f.Name(), f.Size())
-				if f.IsDir() != true {
+				if f.IsDir() {
 					nbrfile = nbrfile + 1
 					folderoldsize = f.Size()
 					foldersize = foldersize + folderoldsize

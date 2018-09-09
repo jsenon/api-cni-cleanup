@@ -20,7 +20,6 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
-	"os"
 
 	"github.com/rs/zerolog/log"
 
@@ -31,10 +30,9 @@ import (
 )
 
 var nbrfile int64
-var folderoldsize int64
-var foldersize int64
 
-func Cleanner(ctx context.Context, api string, cnifiles string) {
+// Cleanner will clean cni folder by deleting file if pod don't exist
+func Cleanner(ctx context.Context, api string, cnifiles string) { // nolinter : gocyclo
 	_, span := trace.StartSpan(ctx, "(*serve).Cleanner")
 	defer span.End()
 
@@ -89,11 +87,4 @@ func Cleanner(ctx context.Context, api string, cnifiles string) {
 		}
 	}
 
-}
-
-func homeDir() string {
-	if h := os.Getenv("HOME"); h != "" {
-		return h
-	}
-	return os.Getenv("USERPROFILE") // windows
 }

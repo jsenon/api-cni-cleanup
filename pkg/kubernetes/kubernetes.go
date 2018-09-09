@@ -11,6 +11,7 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 )
 
+// K8sInternal Connect to Internal k8s Cluster
 func K8sInternal() (client *kubernetes.Clientset, err error) {
 	config, err := rest.InClusterConfig()
 	log.Debug().Msg("Received config object k8s")
@@ -26,9 +27,9 @@ func K8sInternal() (client *kubernetes.Clientset, err error) {
 	return client, nil
 }
 
+// K8SExternal Connect to External k8s Cluster
 func K8SExternal() (client *kubernetes.Clientset, err error) {
-	var kubeconfig *string
-	kubeconfig = flag.String("kubeconfig", filepath.Join(homeDir(), ".kube", "config"), "(optional) absolute path to the kubeconfig file")
+	kubeconfig := flag.String("kubeconfig", filepath.Join(homeDir(), ".kube", "config"), "(optional) absolute path to the kubeconfig file")
 	flag.Parse()
 	log.Debug().Msgf("Flag Kubeconfig: ", &kubeconfig)
 	config, err := clientcmd.BuildConfigFromFlags("", *kubeconfig)
@@ -47,6 +48,7 @@ func K8SExternal() (client *kubernetes.Clientset, err error) {
 	return client, nil
 }
 
+// homeDir set home directory
 func homeDir() string {
 	if h := os.Getenv("HOME"); h != "" {
 		return h

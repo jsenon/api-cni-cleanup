@@ -66,7 +66,9 @@ func init() {
 func Start() {
 	ctx := context.Background()
 
-	nbrfiles.StatsFiles(ctx, viper.GetString("cnifiles"))
-
+	err := nbrfiles.StatsFiles(ctx, viper.GetString("cnifiles"))
+	if err != nil {
+		log.Error().Msgf("Error when retrieving stats for cni folder", err.Error())
+	}
 	rest.ServeRest(ctx)
 }

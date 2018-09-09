@@ -31,8 +31,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-var folder string
-
 // serveCmd represents the serve command
 var serveCmd = &cobra.Command{
 	Use:   "clean",
@@ -65,7 +63,7 @@ func init() {
 	rootCmd.AddCommand(serveCmd)
 }
 
-// Start the server
+// Serve Start the server
 func Serve(folder string) {
 	ctx := context.Background()
 	cleanner.Cleanner(ctx, api, folder)
