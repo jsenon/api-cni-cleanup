@@ -34,12 +34,12 @@ Available Commands:
   server      Launch CNI Cleanner Server
 
 Flags:
-      --api string        External or Internal K8S cluster (default "internal")
-      --cnifiles string   Set CNI Folder (default "/var/lib/cni")
-      --config string     config file (default is $HOME/.api-cni-cleanup.yaml)
-      --debug             Set log level to Debug
-  -h, --help              help for api-cni-cleanup
-      --jaeger string     Set jaegger collector endpoint (default "http://localhost:14268")
+      --api string         External or Internal K8S cluster (default "internal")
+      --cnifiles string    Set CNI Folder (default "/var/lib/cni")
+      --config string      config file (default is $HOME/.api-cni-cleanup.yaml)
+      --debug              Set log level to Debug
+  -h, --help               help for api-cni-cleanup
+      --jaegerurl string   Set jaegger collector endpoint
 
 Use "api-cni-cleanup [command] --help" for more information about a command.
 ```
