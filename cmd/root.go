@@ -49,7 +49,7 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 	rootCmd.PersistentFlags().StringVar(&api, "api", "internal", "External or Internal K8S cluster")
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.vpncentralmanager.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.api-cni-cleanup.yaml)")
 	rootCmd.PersistentFlags().StringVar(&jaegerurl, "jaeger", "http://localhost:14268", "Set jaegger collector endpoint")
 	rootCmd.PersistentFlags().BoolVar(&loglevel, "debug", false, "Set log level to Debug")
 	rootCmd.PersistentFlags().StringVar(&cnifiles, "cnifiles", "/var/lib/cni", "Set CNI Folder")

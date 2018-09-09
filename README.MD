@@ -77,6 +77,8 @@ apicnicleanup_size_bytes XX
 
 ### TIPS
 
+Vendoring [constraint](https://github.com/kubernetes/minikube/issues/3037#issuecomment-418384405)
+
 ### TODO
 
 - [x] Create New Metric on Prometheus = Count files + Folder Size
