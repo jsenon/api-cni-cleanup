@@ -11,10 +11,13 @@
 
 ### Prerequisite
 
-This application must run inside kubernetes cluster
+This application must run inside kubernetes cluster.
+
 It's recommended to run it must on Daemonset in order to access to all nodes where the cni files are located.
 
 ### Deployment
+
+Coming soon
 
 ### Usage
 
@@ -49,7 +52,7 @@ When you launch application in server mode you will have prometheus metrics:
 api-cni-cleanup server --api APITYPE --cnifiles YOURCNIFOLDER
 ```
 
-Prometheus metrics are available on:s
+Prometheus metrics are available on:
 
 - http://localhost:9010/metrics
 
