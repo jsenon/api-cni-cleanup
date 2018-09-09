@@ -23,7 +23,7 @@ spec:
       - name: api-cni-cleanup
         image: docker.io/jsenon/api-cni-cleanup:latest
         command: ["./api-cni-cleanup"]
-        args: [server,--api internal,--cnifiles,/var/lib/cni/networks/cbr0]
+        args: [server,--api,internal,--cnifiles,/var/lib/cni/networks/cbr0]
         imagePullPolicy: Always
         volumeMounts:
           - name: varcni
@@ -47,7 +47,7 @@ kind: CronJob
 metadata:
   name: api-cni-cleanup
 spec:
-  schedule: "0 8 * * 1,2,3,4,5"
+  schedule: "0 8 * * 1"
   jobTemplate:
     spec:
       template:
@@ -56,7 +56,7 @@ spec:
           - name: api-cni-cleanup
             image: docker.io/jsenon/api-cni-cleanup:latest
             command: ["./api-cni-cleanup"]
-            args: [job]
+            args: [job,--api, internal,--urlserver,http://localhost:9010/cleanup]
             env:
             - name: NODE_SERVER
               value: ""

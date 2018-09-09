@@ -23,7 +23,9 @@ import (
 
 	"github.com/jsenon/api-cni-cleanup/config"
 	"github.com/jsenon/api-cni-cleanup/internal/calc"
+	"github.com/jsenon/api-cni-cleanup/pkg/exporter"
 	"github.com/jsenon/api-cni-cleanup/pkg/rest"
+	"go.opencensus.io/trace"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -53,6 +55,8 @@ var apiCmd = &cobra.Command{
 		}
 		log.Debug().Msg("Log level set to Debug")
 		log.Debug().Msgf("Folder to watch: %s", viper.GetString("cnifiles"))
+		log.Debug().Msgf("Jaeger Remote URL %s", viper.GetString("jaegerurl"))
+
 		Start()
 	},
 }
@@ -65,6 +69,12 @@ func init() {
 // Start the server
 func Start() {
 	ctx := context.Background()
+	remotejaegurl := viper.GetString("jaegerurl")
+	if remotejaegurl != "" {
+		log.Debug().Msg("Jaeger endpoint has been defined")
+		jaegerexporter.NewExporterCollector()
+		trace.ApplyConfig(trace.Config{DefaultSampler: trace.AlwaysSample()})
+	}
 
 	err := nbrfiles.StatsFiles(ctx, viper.GetString("cnifiles"))
 	if err != nil {

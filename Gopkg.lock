@@ -3,6 +3,13 @@
 
 [[projects]]
   branch = "master"
+  name = "git.apache.org/thrift.git"
+  packages = ["lib/go/thrift"]
+  revision = "2566ecd5d9999f7ff70e6ac702243f0dfb24e7aa"
+  source = "github.com/apache/thrift"
+
+[[projects]]
+  branch = "master"
   name = "github.com/beorn7/perks"
   packages = ["quantile"]
   revision = "3a771d992973f24aa725d07868b467d1ddfceafb"
@@ -250,6 +257,8 @@
   name = "go.opencensus.io"
   packages = [
     ".",
+    "exporter/jaeger",
+    "exporter/jaeger/internal/gen-go/jaeger",
     "exporter/prometheus",
     "internal",
     "internal/tagencoding",
@@ -289,6 +298,12 @@
 
 [[projects]]
   branch = "master"
+  name = "golang.org/x/sync"
+  packages = ["semaphore"]
+  revision = "1d60e4601c6fd243af51cc01ddf169918a5407ca"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/sys"
   packages = [
     "unix",
@@ -322,6 +337,12 @@
   name = "golang.org/x/time"
   packages = ["rate"]
   revision = "fbb02b2291d28baffd63558aa44b4b56f178d650"
+
+[[projects]]
+  branch = "master"
+  name = "google.golang.org/api"
+  packages = ["support/bundler"]
+  revision = "6b0ababeb16a3b51c1d64dc927e117230208a69f"
 
 [[projects]]
   branch = "master"
@@ -493,6 +514,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "dba3ec33a66373c3f7917f10bb53e89bad427ef1682e3493238013d3c0bad12f"
+  inputs-digest = "c0f54fb30dde03b4be93814f07838a24ade5036c70e04432e666dab3af7d1f2f"
   solver-name = "gps-cdcl"
   solver-version = 1
