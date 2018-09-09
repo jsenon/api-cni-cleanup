@@ -1,7 +1,6 @@
 package kubernetes
 
 import (
-	"flag"
 	"os"
 	"path/filepath"
 
@@ -29,15 +28,15 @@ func K8sInternal() (client *kubernetes.Clientset, err error) {
 
 // K8SExternal Connect to External k8s Cluster
 func K8SExternal() (client *kubernetes.Clientset, err error) {
-	kubeconfig := flag.String("kubeconfig", filepath.Join(homeDir(), ".kube", "config"), "(optional) absolute path to the kubeconfig file")
-	flag.Parse()
-	// log.Debug().Msgf("Flag Kubeconfig: %s", &kubeconfig)
-	config, err := clientcmd.BuildConfigFromFlags("", *kubeconfig)
-	log.Debug().Msg("Received config object k8s")
+	kubeconfig := filepath.Join(homeDir(), ".kube", "config")
+	log.Debug().Msgf("Kubeconfig: %s", kubeconfig)
+	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
 	if err != nil {
 		log.Error().Msgf("Error config external cluster api kubernetes: ", err.Error())
 		return nil, err
 	}
+	log.Debug().Msg("Received config object k8s")
+
 	// create the clientset
 	client, err = kubernetes.NewForConfig(config)
 	log.Debug().Msg("Received config Clientset")

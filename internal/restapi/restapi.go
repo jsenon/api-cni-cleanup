@@ -95,6 +95,7 @@ func writeJSONResponse(w http.ResponseWriter, status int, data []byte) {
 // Cleanner will launch cleanning
 func Cleanner(w http.ResponseWriter, _ *http.Request) {
 	ctx := context.Background()
+	log.Debug().Msg("In func Cleanner")
 	_, span := trace.StartSpan(ctx, "(*api).CountFile")
 	defer span.End()
 	cnifiles := viper.GetString("cnifiles")

@@ -82,7 +82,7 @@ func StatsFiles(ctx context.Context, cnifiles string) error {
 					foldersize = foldersize + folderoldsize
 				}
 			}
-			log.Debug().Msgf("File size %d, File Number %d", foldersize, nbrfile)
+			// log.Debug().Msgf("File size %d, File Number %d", foldersize, nbrfile)
 			stats.Record(ctx, nbr.M(nbrfile), size.M(foldersize))
 			time.Sleep(1 * time.Second)
 		}

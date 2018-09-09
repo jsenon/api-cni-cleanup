@@ -73,7 +73,7 @@ apicnicleanup_number_count XX
 apicnicleanup_size_bytes XX
 ```
 
-- http://localhost:9010/clean : Delete unecessary cni files
+- http://localhost:9010/cleanup : Delete unecessary cni files
 
 ### TIPS
 

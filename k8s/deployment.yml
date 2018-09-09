@@ -1,17 +1,21 @@
+# Daemonset
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
   name: api-cni-cleanup
-  namespace: default
+  labels:
+    app: api-cni-cleanup
+    version: v.0.0.1
 spec:
-  replicas: 1
   selector:
     matchLabels:
+      beta.kubernetes.io/os: linux
       app: api-cni-cleanup
       version: v.0.0.1
   template:
     metadata:
       labels:
+        beta.kubernetes.io/os: linux
         app: api-cni-cleanup
         version: v.0.0.1
     spec:
@@ -19,5 +23,41 @@ spec:
       - name: api-cni-cleanup
         image: docker.io/jsenon/api-cni-cleanup:latest
         command: ["./api-cni-cleanup"]
-        args: [serve,--url,http://localhost:8000]
+        args: [server,--api internal,--cnifiles,/var/lib/cni/networks/cbr0]
         imagePullPolicy: Always
+        volumeMounts:
+          - name: varcni
+            mountPath: /var/lib/cni/networks
+          - name: varrundocker
+            mountPath: /var/run/docker.sock
+      volumes:
+      - name: varcni
+        hostPath:
+          path: /var/lib/cni/networks
+      - name: varrundocker
+        hostPath:
+          path: /var/run/docker.socks
+----
+# Svc
+
+----
+# Cronjob
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: api-cni-cleanup
+spec:
+  schedule: "0 8 * * 1,2,3,4,5"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: api-cni-cleanup
+            image: docker.io/jsenon/api-cni-cleanup:latest
+            command: ["./api-cni-cleanup"]
+            args: [job]
+            env:
+            - name: NODE_SERVER
+              value: ""
+          restartPolicy: OnFailure
