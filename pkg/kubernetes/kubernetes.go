@@ -38,6 +38,7 @@ func K8sInternal(ctx context.Context) (client *kubernetes.Clientset, err error) 
 		return nil, err
 	}
 	client, err = kubernetes.NewForConfig(config)
+	log.Debug().Msg("Received client object k8s")
 	if err != nil {
 		log.Error().Msgf("Error creation clientset kubernetes: ", err.Error())
 		return nil, err
