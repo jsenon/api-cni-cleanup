@@ -17,7 +17,18 @@ It's recommended to run it must on Daemonset in order to access to all nodes whe
 
 ### Deployment
 
-Coming soon
+Deployment on Kubernetes cluster:
+
+```sh
+kubectl apply -f k8s/deployment.yml
+```
+
+We will deploy:
+
+- RBAC Compatibility
+- Cronjob to launch cleanup each Monday
+- Service
+- Daemonset
 
 ### Usage
 
@@ -109,4 +120,4 @@ Vendoring [constraint](https://github.com/kubernetes/minikube/issues/3037#issuec
 - [x] Diff IP files and API PodIP
 - [ ] Remove files unused
 - [x] Api to launch cleanup
-- [ ] k8s deployment: DaemonSet + svc + Cronjob
+- [x] k8s deployment: DaemonSet + svc + Cronjob
