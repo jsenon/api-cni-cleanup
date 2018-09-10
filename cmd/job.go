@@ -130,7 +130,7 @@ func urlauto(ctx context.Context) error {
 			}
 			defer resp.Body.Close() //nolint: errcheck
 
-			log.Info().Msgf("Reponse status: %s", resp.Status)
+			log.Info().Msgf("Response status: %s", resp.Status)
 			log.Debug().Msgf("Response Headers: %s", resp.Header)
 			body, err := ioutil.ReadAll(resp.Body)
 			if err != nil {
@@ -178,7 +178,7 @@ func urlmanu(ctx context.Context) error {
 			}
 			defer resp.Body.Close() //nolint: errcheck
 
-			log.Info().Msgf("Reponse status: %s", resp.Status)
+			log.Info().Msgf("Response status: %s", resp.Status)
 			log.Debug().Msgf("Response Headers: %s", resp.Header)
 			body, err := ioutil.ReadAll(resp.Body)
 			if err != nil {
