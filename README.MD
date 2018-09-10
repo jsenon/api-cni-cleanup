@@ -54,11 +54,11 @@ api-cni-cleanup server --api APITYPE --cnifiles YOURCNIFOLDER
 
 Prometheus metrics are available on:
 
-- http://localhost:9010/metrics
+- [http://localhost:9010/metrics](http://localhost:9010/metrics)
 
 Stats are:
 
-```
+```text
 # HELP apicnicleanup_number_count number of files
 # TYPE apicnicleanup_number_count gauge
 apicnicleanup_number_count XX
@@ -69,15 +69,22 @@ apicnicleanup_size_bytes XX
 
 Api entrypoint to launch the cleaning is:
 
-- http://localhost:9010/cleanup : Delete unecessary cni files
+- [http://localhost:9010/cleanup](http://localhost:9010/cleanup)
 
 ### Run Job Mode
 
 In order to schedule the cleaning with a cronjob you can launch application in job mode:
 
-Contact API CNI Cleanner
+Contact API CNI Cleanner:
+
 ```sh
 api-cni-cleanup job --urlserver http://127.0.0.1:9010/cleanup,http://192.168.0.2:9010/cleanup
+```
+
+For automatic discovery, actually based on daemonset name and port:
+
+```sh
+api-cni-cleanup job --autodiscover
 ```
 
 Just specify all you `urlserver` that's represent all you api-cni-cleanup servers 
