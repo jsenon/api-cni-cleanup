@@ -103,7 +103,7 @@ func Job() {
 
 // urlauto will discover api cni cleanup server endpoint
 func urlauto(ctx context.Context) error {
-	ctx, span := trace.StartSpan(context.Background(), "(*cniserver).urlauto")
+	_, span := trace.StartSpan(context.Background(), "(*cniserver).urlauto")
 	defer span.End()
 	log.Debug().Msg("In func urlauto")
 	//call func PodDiscovery
@@ -149,7 +149,7 @@ func urlauto(ctx context.Context) error {
 
 // urlmanu will call API CNI Server with manual url declaration
 func urlmanu(ctx context.Context) error {
-	ctx, span := trace.StartSpan(context.Background(), "(*cniserver).urlmanu")
+	_, span := trace.StartSpan(context.Background(), "(*cniserver).urlmanu")
 	defer span.End()
 	log.Debug().Msg("In func urlmanu")
 	s := strings.Split(viper.GetString("urlserver"), ",")
