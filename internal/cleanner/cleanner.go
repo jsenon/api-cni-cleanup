@@ -45,12 +45,14 @@ func Cleanner(ctx context.Context, api string, cnifiles string) error { // nolin
 		client, err = k.K8sInternal(ctx)
 		if err != nil {
 			log.Error().Msgf("Error Call client connection to k8s internal ", err.Error())
+			span.SetStatus(trace.Status{Code: trace.StatusCodeUnknown, Message: err.Error()})
 			return err
 		}
 	case "external":
 		client, err = k.K8SExternal(ctx)
 		if err != nil {
 			log.Error().Msgf("Error Call client connection to k8s external ", err.Error())
+			span.SetStatus(trace.Status{Code: trace.StatusCodeUnknown, Message: err.Error()})
 			return err
 		}
 	default:
@@ -72,12 +74,12 @@ func Cleanner(ctx context.Context, api string, cnifiles string) error { // nolin
 		log.Debug().Msgf("NodeName: %s", n.Spec.NodeName)
 		log.Debug().Msgf("PodIP: %s", n.Status.PodIP)
 
-		// TODO: Retrieve files on the node
-		// Compare with n.Status.PodIP
+		// TODO:
 		// Erase if file exist but n.Status.IP does not
 		files, err := ioutil.ReadDir(cnifiles)
 		if err != nil {
 			log.Fatal().Msgf("Failed to read folder: %v", err)
+			span.SetStatus(trace.Status{Code: trace.StatusCodeUnknown, Message: err.Error()})
 			return err
 		}
 		nbrfile = 0
@@ -85,9 +87,11 @@ func Cleanner(ctx context.Context, api string, cnifiles string) error { // nolin
 			// If a cni file named with ip pod exist and a pod have this IP
 			if f.Name() == n.Status.PodIP {
 				log.Debug().Msg("Pod Exist is running, don't erase file")
+				span.SetStatus(trace.Status{Code: trace.StatusCodeOK, Message: "Pod Exist is running, don't erase file"})
 			} else {
 				// A file exist but no Pod hve this IP
 				log.Debug().Msg("Pod don't run, erase file")
+				span.SetStatus(trace.Status{Code: trace.StatusCodeOK, Message: "Pod don't run, erase file"})
 			}
 		}
 	}

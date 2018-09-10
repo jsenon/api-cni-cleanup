@@ -57,6 +57,7 @@ func StatsFiles(ctx context.Context, cnifiles string) error {
 	err := view.Register(viewCount, viewSize)
 	if err != nil {
 		log.Error().Msgf("Error registering view:", err.Error())
+		span.SetStatus(trace.Status{Code: trace.StatusCodeUnknown, Message: err.Error()})
 		return err
 	}
 	view.SetReportingPeriod(10 * time.Second)
@@ -70,6 +71,7 @@ func StatsFiles(ctx context.Context, cnifiles string) error {
 			files, err := ioutil.ReadDir(cnifiles)
 			if err != nil {
 				log.Fatal().Msgf("Failed to read folder: %v", err)
+				span.SetStatus(trace.Status{Code: trace.StatusCodeUnknown, Message: err.Error()})
 			}
 			nbrfile = 0
 			foldersize = 0

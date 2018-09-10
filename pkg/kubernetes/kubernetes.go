@@ -35,12 +35,14 @@ func K8sInternal(ctx context.Context) (client *kubernetes.Clientset, err error) 
 	log.Debug().Msg("Received config object k8s")
 	if err != nil {
 		log.Error().Msgf("Error config in cluster api kubernetes: ", err.Error())
+		span.SetStatus(trace.Status{Code: trace.StatusCodeUnknown, Message: err.Error()})
 		return nil, err
 	}
 	client, err = kubernetes.NewForConfig(config)
 	log.Debug().Msg("Received client object k8s")
 	if err != nil {
 		log.Error().Msgf("Error creation clientset kubernetes: ", err.Error())
+		span.SetStatus(trace.Status{Code: trace.StatusCodeUnknown, Message: err.Error()})
 		return nil, err
 	}
 	return client, nil
@@ -55,6 +57,7 @@ func K8SExternal(ctx context.Context) (client *kubernetes.Clientset, err error) 
 	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
 	if err != nil {
 		log.Error().Msgf("Error config external cluster api kubernetes: ", err.Error())
+		span.SetStatus(trace.Status{Code: trace.StatusCodeUnknown, Message: err.Error()})
 		return nil, err
 	}
 	log.Debug().Msg("Received config object k8s")
@@ -64,6 +67,7 @@ func K8SExternal(ctx context.Context) (client *kubernetes.Clientset, err error) 
 	log.Debug().Msg("Received config Clientset")
 	if err != nil {
 		log.Error().Msgf("Error creation clientset kubernetes: ", err.Error())
+		span.SetStatus(trace.Status{Code: trace.StatusCodeUnknown, Message: err.Error()})
 		return nil, err
 	}
 	return client, nil

@@ -42,12 +42,14 @@ func PodDiscovery(ctx context.Context) (pods *v1.PodList, err error) {
 		client, err = K8sInternal(ctx)
 		if err != nil {
 			log.Error().Msgf("Error Call client connection to k8s internal ", err.Error())
+			span.SetStatus(trace.Status{Code: trace.StatusCodeUnknown, Message: err.Error()})
 			return nil, err
 		}
 	case "external":
 		client, err = K8SExternal(ctx)
 		if err != nil {
 			log.Error().Msgf("Error Call client connection to k8s external ", err.Error())
+			span.SetStatus(trace.Status{Code: trace.StatusCodeUnknown, Message: err.Error()})
 			return nil, err
 		}
 	default:
@@ -57,6 +59,7 @@ func PodDiscovery(ctx context.Context) (pods *v1.PodList, err error) {
 	// List Pods interface
 	pods, err = client.CoreV1().Pods("").List(metav1.ListOptions{})
 	if err != nil {
+		span.SetStatus(trace.Status{Code: trace.StatusCodeUnknown, Message: err.Error()})
 		log.Fatal().Msg("Error listing pod")
 		return nil, err
 	}

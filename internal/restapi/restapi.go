@@ -65,6 +65,7 @@ func WellKnownFingerHandler(w http.ResponseWriter, _ *http.Request) {
 	data, err := json.Marshal(item)
 	if err != nil {
 		log.Error().Msgf("Error %s", err.Error())
+		span.SetStatus(trace.Status{Code: trace.StatusCodeUnknown, Message: err.Error()})
 		runtime.Goexit()
 	}
 	writeJSONResponse(ctx, w, http.StatusOK, data)
@@ -77,6 +78,7 @@ func Health(w http.ResponseWriter, _ *http.Request) {
 	data, err := json.Marshal(healthCheckResponse{Status: "UP"})
 	if err != nil {
 		log.Error().Msgf("Error %s", err.Error())
+		span.SetStatus(trace.Status{Code: trace.StatusCodeUnknown, Message: err.Error()})
 		runtime.Goexit()
 	}
 	log.Debug().Msgf("Debug Marshall health", data)
@@ -94,6 +96,7 @@ func writeJSONResponse(ctx context.Context, w http.ResponseWriter, status int, d
 	_, err := w.Write(data)
 	if err != nil {
 		log.Error().Msgf("Error %s", err.Error())
+		span.SetStatus(trace.Status{Code: trace.StatusCodeUnknown, Message: err.Error()})
 		runtime.Goexit()
 	}
 }
@@ -108,6 +111,7 @@ func Cleanner(w http.ResponseWriter, _ *http.Request) {
 	err := cleanner.Cleanner(ctx, api, cnifiles)
 	if err != nil {
 		log.Error().Msgf("Error %s", err.Error())
+		span.SetStatus(trace.Status{Code: trace.StatusCodeUnknown, Message: err.Error()})
 		data, errmarsh := json.Marshal(healthCheckResponse{Status: "Error"})
 		if errmarsh != nil {
 			log.Error().Msgf("Error %s", errmarsh.Error())
@@ -117,6 +121,7 @@ func Cleanner(w http.ResponseWriter, _ *http.Request) {
 	data, err := json.Marshal(healthCheckResponse{Status: "Done"})
 	if err != nil {
 		log.Error().Msgf("Error %s", err.Error())
+		span.SetStatus(trace.Status{Code: trace.StatusCodeUnknown, Message: err.Error()})
 	}
 	writeJSONResponse(ctx, w, http.StatusOK, data)
 }
