@@ -98,7 +98,7 @@ For automatic discovery, actually based on daemonset name and port:
 api-cni-cleanup job --autodiscover
 ```
 
-Just specify all you `urlserver` that's represent all you api-cni-cleanup servers 
+Just specify all you `urlserver` that's represent all you api-cni-cleanup servers
 
 ### (OPTIONAL) Run Batch Mode
 
