@@ -4,7 +4,7 @@ kind: DaemonSet
 metadata:
   annotations:
     prometheus.io/scrape: 'true'
-    prometheus.io/port: "9090"
+    prometheus.io/port: "9010"
   name: api-cni-cleanup 
   labels:
     app: api-cni-cleanup
