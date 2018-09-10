@@ -35,6 +35,8 @@ var foldersize int64
 // StatsFiles will provide metrics for cni folder: folder size, number of elements
 func StatsFiles(ctx context.Context, cnifiles string) error {
 	ctx, span := trace.StartSpan(context.Background(), "(*cniserver).StatsFiles")
+	span.Annotate(nil, "Calculate cni files stats")
+
 	defer span.End()
 	// New Metrics Number of file in CNI Folder
 	nbr := stats.Int64("cni/file/nbre", "Number of File", "")

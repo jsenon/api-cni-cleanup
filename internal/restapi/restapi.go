@@ -21,6 +21,8 @@ import (
 	"runtime"
 	"strconv"
 
+	"go.opencensus.io/tag"
+
 	"github.com/jsenon/api-cni-cleanup/internal/cleanner"
 	"github.com/spf13/viper"
 	"go.opencensus.io/trace"
@@ -49,6 +51,7 @@ type wellknownResponse struct {
 // WellKnownFingerHandler will provide the information about the service.
 func WellKnownFingerHandler(w http.ResponseWriter, _ *http.Request) {
 	ctx, span := trace.StartSpan(context.Background(), "(*cniserver).WellKnownFingerHandler")
+	span.Annotate(nil, "Received REST /.well-known")
 	defer span.End()
 	item := wellknownResponse{
 		Servicename:        "api-cni-cleanup",
@@ -74,6 +77,7 @@ func WellKnownFingerHandler(w http.ResponseWriter, _ *http.Request) {
 // Health will provide the information about state of the service.
 func Health(w http.ResponseWriter, _ *http.Request) {
 	ctx, span := trace.StartSpan(context.Background(), "(*cniserver).Health")
+	span.Annotate(nil, "Received REST /healthz")
 	defer span.End()
 	data, err := json.Marshal(healthCheckResponse{Status: "UP"})
 	if err != nil {
@@ -89,6 +93,7 @@ func Health(w http.ResponseWriter, _ *http.Request) {
 // writeJsonResponse will convert response to json
 func writeJSONResponse(ctx context.Context, w http.ResponseWriter, status int, data []byte) {
 	_, span := trace.StartSpan(ctx, "(*cniserver).writeJSONResponse")
+	span.Annotate(nil, "Write string to JSON")
 	defer span.End()
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Content-Length", strconv.Itoa(len(data)))
@@ -103,12 +108,34 @@ func writeJSONResponse(ctx context.Context, w http.ResponseWriter, status int, d
 
 // Cleanner will launch cleanning
 func Cleanner(w http.ResponseWriter, _ *http.Request) {
-	log.Debug().Msg("In func Cleanner")
 	ctx, span := trace.StartSpan(context.Background(), "(*cniserver).Cleanner")
+	log.Debug().Msg("In func Cleanner")
+	span.Annotate(nil, "Received REST /cleanup")
 	defer span.End()
+
+	// Test Tag insert in Trace
+	Application, err := tag.NewKey("Application")
+	if err != nil {
+		log.Error().Msgf("Error %s", err.Error())
+		span.SetStatus(trace.Status{Code: trace.StatusCodeUnknown, Message: err.Error()})
+	}
+	Version, err := tag.NewKey("Version")
+	if err != nil {
+		log.Error().Msgf("Error %s", err.Error())
+		span.SetStatus(trace.Status{Code: trace.StatusCodeUnknown, Message: err.Error()})
+	}
+	ctx, err = tag.New(ctx,
+		tag.Insert(Application, "apicnicleanup"),
+		tag.Insert(Version, "v.0.1"),
+	)
+	if err != nil {
+		log.Error().Msgf("Error %s", err.Error())
+		span.SetStatus(trace.Status{Code: trace.StatusCodeUnknown, Message: err.Error()})
+	}
+
 	cnifiles := viper.GetString("cnifiles")
 	api := viper.GetString("api")
-	err := cleanner.Cleanner(ctx, api, cnifiles)
+	err = cleanner.Cleanner(ctx, api, cnifiles)
 	if err != nil {
 		log.Error().Msgf("Error %s", err.Error())
 		span.SetStatus(trace.Status{Code: trace.StatusCodeUnknown, Message: err.Error()})

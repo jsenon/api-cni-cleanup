@@ -30,6 +30,7 @@ import (
 // PodDiscovery will send IP of API CNI CLeanup POD
 func PodDiscovery(ctx context.Context) (pods *v1.PodList, err error) {
 	ctx, span := trace.StartSpan(ctx, "(*cniserver).K8SExternal")
+	span.Annotate(nil, "Discover POD")
 	defer span.End()
 	log.Debug().Msgf("In Poddiscovery")
 

@@ -33,6 +33,7 @@ var nbrfile int64
 // Cleanner will clean cni folder by deleting file if pod don't exist
 func Cleanner(ctx context.Context, api string, cnifiles string) error { // nolinter : gocyclo
 	ctx, span := trace.StartSpan(ctx, "(*cniserver).Cleanner")
+	span.Annotate(nil, "Made the cleaning")
 	defer span.End()
 
 	var client *kubernetes.Clientset

@@ -30,6 +30,7 @@ import (
 // K8sInternal Connect to Internal k8s Cluster
 func K8sInternal(ctx context.Context) (client *kubernetes.Clientset, err error) {
 	_, span := trace.StartSpan(ctx, "(*cniserver).K8sInternal")
+	span.Annotate(nil, "Open connection to Internal k8s cluster")
 	defer span.End()
 	config, err := rest.InClusterConfig()
 	log.Debug().Msg("Received config object k8s")
@@ -51,6 +52,7 @@ func K8sInternal(ctx context.Context) (client *kubernetes.Clientset, err error) 
 // K8SExternal Connect to External k8s Cluster
 func K8SExternal(ctx context.Context) (client *kubernetes.Clientset, err error) {
 	ctx, span := trace.StartSpan(ctx, "(*cniserver).K8SExternal")
+	span.Annotate(nil, "Open connection to External k8s cluster")
 	defer span.End()
 	kubeconfig := filepath.Join(homeDir(ctx), ".kube", "config")
 	log.Debug().Msgf("Kubeconfig: %s", kubeconfig)
@@ -76,6 +78,7 @@ func K8SExternal(ctx context.Context) (client *kubernetes.Clientset, err error) 
 // homeDir set home directory
 func homeDir(ctx context.Context) string {
 	_, span := trace.StartSpan(ctx, "(*cniserver).homeDir")
+	span.Annotate(nil, "Find homedir")
 	defer span.End()
 	if h := os.Getenv("HOME"); h != "" {
 		return h
