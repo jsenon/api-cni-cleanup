@@ -45,6 +45,23 @@ spec:
         hostPath:
           path: /var/run/docker.socks
 ---
+# SVC
+kind: Service
+apiVersion: v1
+metadata:
+  namespace: kube-system
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: "9010"
+  name: api-cni-cleanup
+spec:
+  selector:
+    app: api-cni-cleanup
+  ports:
+  - protocol: TCP
+    port: 9010
+    targetPort: 9010
+---
 # Cronjob
 apiVersion: batch/v1beta1
 kind: CronJob
