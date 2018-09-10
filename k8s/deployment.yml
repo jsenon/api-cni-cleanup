@@ -22,11 +22,12 @@ spec:
         app: api-cni-cleanup
         version: v.0.0.1
     spec:
+      serviceAccountName: cni-serviceaccount
       containers:
       - name: api-cni-cleanup # Do not change name
         image: docker.io/jsenon/api-cni-cleanup:latest
         command: ["./api-cni-cleanup"]
-        args: [server,--api,internal,--cnifiles,/var/lib/cni/networks/cbr0]
+        args: [server,--api,internal,--cnifiles,/var/lib/cni/networks/cbr0, --debug]
         imagePullPolicy: Always
         volumeMounts:
           - name: varcni
@@ -61,3 +62,33 @@ spec:
             command: ["./api-cni-cleanup"]
             args: [job,--api, internal,--autodiscover]
           restartPolicy: OnFailure
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  # "namespace" omitted since ClusterRoles are not namespaced
+  name: cni-serviceaccount
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "watch", "list"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: cni-serviceaccount
+  namespace: kube-system
+subjects:
+- kind: ServiceAccount
+  name: cni-serviceaccount # Name is case sensitive
+  namespace: kube-system
+roleRef:
+  kind: ClusterRole #this must be Role or ClusterRole
+  name: cni-serviceaccount # this must match the name of the Role or ClusterRole you wish to bind to
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cni-serviceaccount
+  namespace: kube-system
