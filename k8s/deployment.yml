@@ -5,7 +5,7 @@ metadata:
   annotations:
     prometheus.io/scrape: 'true'
     prometheus.io/port: "9090"
-  name: api-cni-cleanup
+  name: api-cni-cleanup # Do not change name
   labels:
     app: api-cni-cleanup
     version: v.0.0.1
@@ -34,10 +34,8 @@ spec:
           - name: varrundocker
             mountPath: /var/run/docker.sock
         ports:
-          - containerPort: 9010
-            # hostPort: 39010
+          - containerPort: 9010 # Do not change port
             protocol: http
-        # hostNetwork: true
       volumes:
       - name: varcni
         hostPath:
@@ -45,26 +43,6 @@ spec:
       - name: varrundocker
         hostPath:
           path: /var/run/docker.socks
-----
-# SVC
-apiVersion: v1
-kind: Service
-metadata:
-  annotations:
-    prometheus.io/scrape: 'true'
-  labels:
-    name: api-cni-cleanup
-    kubernetes.io/name: "Apicnicleanup"
-  name: api-cni-cleanup
-spec:
-  selector:
-    app: api-cni-cleanup
-  #type: NodePort
-  ports:
-  - name: api-cni-cleanup
-    protocol: TCP
-    port: 9010
-    targetPort: 9010
 ----
 # Cronjob
 apiVersion: batch/v1beta1
