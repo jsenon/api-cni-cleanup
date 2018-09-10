@@ -62,7 +62,7 @@ func Cleanner(ctx context.Context, api string, cnifiles string) error { // nolin
 	log.Debug().Msgf("Debug Client:", client)
 	pods, err := client.CoreV1().Pods("").List(metav1.ListOptions{})
 	if err != nil {
-		log.Fatal().Msg("Error listing pod")
+		log.Fatal().Msgf("Error listing pod: %s", err.Error())
 		return err
 	}
 
