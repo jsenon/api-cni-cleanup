@@ -55,15 +55,15 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&cnifiles, "cnifiles", "/var/lib/cni", "Set CNI Folder")
 	err := viper.BindPFlag("cnifiles", rootCmd.PersistentFlags().Lookup("cnifiles"))
 	if err != nil {
-		log.Error().Msgf("Error binding cnifiles value: ", err.Error())
+		log.Error().Msgf("Error binding cnifiles value: %v", err.Error())
 	}
 	err = viper.BindPFlag("api", rootCmd.PersistentFlags().Lookup("api"))
 	if err != nil {
-		log.Error().Msgf("Error binding api value: ", err.Error())
+		log.Error().Msgf("Error binding api value: %v", err.Error())
 	}
 	err = viper.BindPFlag("jaegerurl", rootCmd.PersistentFlags().Lookup("jaegerurl"))
 	if err != nil {
-		log.Error().Msgf("Error binding jaegerurl value: ", err.Error())
+		log.Error().Msgf("Error binding jaegerurl value: %v", err.Error())
 	}
 	viper.SetDefault("jaegerurl", "")
 	viper.SetDefault("api", "internal")

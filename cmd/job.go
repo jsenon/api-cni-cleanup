@@ -72,11 +72,11 @@ func init() {
 	jobCmd.Flags().BoolVar(&autodiscover, "autodiscover", false, "Manage auto discovery of API CNI Server")
 	err := viper.BindPFlag("urlserver", jobCmd.Flags().Lookup("urlserver"))
 	if err != nil {
-		log.Error().Msgf("Error binding urlserve value: ", err.Error())
+		log.Error().Msgf("Error binding urlserve value: %v", err.Error())
 	}
 	err = viper.BindPFlag("autodiscover", jobCmd.Flags().Lookup("autodiscover"))
 	if err != nil {
-		log.Error().Msgf("Error binding autodiscover value: ", err.Error())
+		log.Error().Msgf("Error binding autodiscover value: %v", err.Error())
 	}
 
 }
@@ -90,13 +90,13 @@ func Job() {
 		log.Debug().Msg("Automatic discovery")
 		err := urlauto(ctx)
 		if err != nil {
-			log.Error().Msgf("Error URL Auto func: ", err.Error())
+			log.Error().Msgf("Error URL Auto func: %v", err.Error())
 		}
 	case false:
 		log.Debug().Msg("Manual discovery")
 		err := urlmanu(ctx)
 		if err != nil {
-			log.Error().Msgf("Error URL Manu func: ", err.Error())
+			log.Error().Msgf("Error URL Manu func: %v", err.Error())
 		}
 	}
 }

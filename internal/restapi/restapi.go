@@ -83,7 +83,7 @@ func Health(w http.ResponseWriter, _ *http.Request) {
 		span.SetStatus(trace.Status{Code: trace.StatusCodeUnknown, Message: err.Error()})
 		runtime.Goexit()
 	}
-	log.Debug().Msgf("Debug Marshall health", data)
+	log.Debug().Msgf("Debug Marshall health: %v", data)
 
 	writeJSONResponse(ctx, w, http.StatusOK, data)
 }

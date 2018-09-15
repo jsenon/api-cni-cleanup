@@ -58,7 +58,7 @@ func StatsFiles(ctx context.Context, cnifiles string) error {
 	}
 	err := view.Register(viewCount, viewSize)
 	if err != nil {
-		log.Error().Msgf("Error registering view:", err.Error())
+		log.Error().Msgf("Error registering view: %v", err.Error())
 		span.SetStatus(trace.Status{Code: trace.StatusCodeUnknown, Message: err.Error()})
 		return err
 	}

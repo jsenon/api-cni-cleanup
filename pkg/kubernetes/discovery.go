@@ -42,14 +42,14 @@ func PodDiscovery(ctx context.Context) (pods *v1.PodList, err error) {
 	case "internal":
 		client, err = K8sInternal(ctx)
 		if err != nil {
-			log.Error().Msgf("Error Call client connection to k8s internal ", err.Error())
+			log.Error().Msgf("Error Call client connection to k8s internal: %v", err.Error())
 			span.SetStatus(trace.Status{Code: trace.StatusCodeUnknown, Message: err.Error()})
 			return nil, err
 		}
 	case "external":
 		client, err = K8SExternal(ctx)
 		if err != nil {
-			log.Error().Msgf("Error Call client connection to k8s external ", err.Error())
+			log.Error().Msgf("Error Call client connection to k8s external: %v", err.Error())
 			span.SetStatus(trace.Status{Code: trace.StatusCodeUnknown, Message: err.Error()})
 			return nil, err
 		}
