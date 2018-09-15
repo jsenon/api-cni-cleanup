@@ -19,6 +19,7 @@ package cleanner
 import (
 	"context"
 	"io/ioutil"
+	"os"
 
 	"github.com/rs/zerolog/log"
 
@@ -45,14 +46,14 @@ func Cleanner(ctx context.Context, api string, cnifiles string) error { // nolin
 	case "internal":
 		client, err = k.K8sInternal(ctx)
 		if err != nil {
-			log.Error().Msgf("Error Call client connection to k8s internal ", err.Error())
+			log.Error().Msgf("Error Call client connection to k8s internal: %v", err.Error())
 			span.SetStatus(trace.Status{Code: trace.StatusCodeUnknown, Message: err.Error()})
 			return err
 		}
 	case "external":
 		client, err = k.K8SExternal(ctx)
 		if err != nil {
-			log.Error().Msgf("Error Call client connection to k8s external ", err.Error())
+			log.Error().Msgf("Error Call client connection to k8s external: %v ", err.Error())
 			span.SetStatus(trace.Status{Code: trace.StatusCodeUnknown, Message: err.Error()})
 			return err
 		}
@@ -62,7 +63,7 @@ func Cleanner(ctx context.Context, api string, cnifiles string) error { // nolin
 	}
 
 	// List Pods interface
-	log.Debug().Msgf("Debug Client:", client)
+	log.Debug().Msgf("Debug Client: %v", client)
 	pods, err := client.CoreV1().Pods("").List(metav1.ListOptions{})
 	if err != nil {
 		log.Fatal().Msgf("Error listing pod: %s", err.Error())
@@ -93,6 +94,11 @@ func Cleanner(ctx context.Context, api string, cnifiles string) error { // nolin
 				// A file exist but no Pod hve this IP
 				log.Debug().Msg("Pod don't run, erase file")
 				span.SetStatus(trace.Status{Code: trace.StatusCodeOK, Message: "Pod don't run, erase file"})
+				err := os.Remove(f.Name())
+				if err != nil {
+					log.Error().Msgf("Error Deleting file %v, %v ", f.Name(), err.Error())
+				}
+				log.Debug().Msg("File erased")
 			}
 		}
 	}
