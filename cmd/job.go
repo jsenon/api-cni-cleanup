@@ -114,7 +114,7 @@ func urlauto(ctx context.Context) error {
 		return err
 	}
 	for _, n := range pods.Items {
-		if strings.Contains(n.Name, "kube-flannel") {
+		if strings.Contains(n.Name, "api-cni-cleanup") {
 			log.Debug().Msgf("PodName: %s", n.Name)
 			log.Debug().Msgf("PodIP: %s", n.Status.PodIP)
 			url := "http://" + n.Status.PodIP + ":9010" + "/cleanup"

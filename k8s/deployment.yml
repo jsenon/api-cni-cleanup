@@ -66,7 +66,7 @@ spec:
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: api-cni-cleanup
+  name: job-api-cni-cleanup
 spec:
   schedule: "0 8 * * 1"
   jobTemplate:
@@ -74,7 +74,7 @@ spec:
       template:
         spec:
           containers:
-          - name: api-cni-cleanup
+          - name: job-api-cni-cleanup
             image: docker.io/jsenon/api-cni-cleanup:latest
             command: ["./api-cni-cleanup"]
             args: [job,--api, internal,--autodiscover]
