@@ -121,3 +121,4 @@ Vendoring [constraint](https://github.com/kubernetes/minikube/issues/3037#issuec
 - [x] Remove files unused
 - [x] Api to launch cleanup
 - [x] k8s deployment: DaemonSet + svc + Cronjob
+- [ ] Redefine api entrypoint with naming convention
