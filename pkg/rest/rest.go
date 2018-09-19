@@ -40,7 +40,7 @@ func ServeRest() {
 		mux := http.DefaultServeMux
 		zpages.Handle(mux, "/")
 		log.Info().Msg("Start debuging Z-Pages Server on http://127.0.0.1:7777")
-		err := http.ListenAndServe("127.0.0.1:7777", mux)
+		err := http.ListenAndServe("0.0.0.0:7777", mux)
 		if err != nil {
 			log.Error().Msgf("Error %s", err.Error())
 			runtime.Goexit()
