@@ -68,7 +68,7 @@ var jobCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(jobCmd)
-	jobCmd.Flags().StringVar(&urlserver, "urlserver", "http://myserver1:9010/cleanup,http://myserve2:9010/cleanup", "Set URL of cni api server")
+	jobCmd.Flags().StringVar(&urlserver, "urlserver", "http://myserver1:9010/cleanup,http://myserver2:9010/cleanup", "Set URL of cni api server")
 	jobCmd.Flags().BoolVar(&autodiscover, "autodiscover", false, "Manage auto discovery of API CNI Server")
 	err := viper.BindPFlag("urlserver", jobCmd.Flags().Lookup("urlserver"))
 	if err != nil {
