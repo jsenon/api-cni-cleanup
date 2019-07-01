@@ -36,7 +36,7 @@ jobs:
       - run: 
           name: Lint
           command: |
-            go get github.com/golangci/golangci-lint/cmd/golangci-lint@v1.15
+            go get github.com/golangci/golangci-lint/cmd/golangci-lint
             golangci-lint run
       - run: 
           name: Code Coverage
