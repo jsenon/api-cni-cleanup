@@ -22,8 +22,8 @@ import (
 	"runtime"
 
 	"github.com/jsenon/api-cni-cleanup/config"
-	"github.com/jsenon/api-cni-cleanup/internal/calc"
-	"github.com/jsenon/api-cni-cleanup/pkg/exporter"
+	nbrfiles "github.com/jsenon/api-cni-cleanup/internal/calc"
+	jaegerexporter "github.com/jsenon/api-cni-cleanup/pkg/exporter"
 	"github.com/jsenon/api-cni-cleanup/pkg/rest"
 	"go.opencensus.io/trace"
 
@@ -34,6 +34,7 @@ import (
 )
 
 // serveCmd represents the serve command
+// nolint: dupl
 var apiCmd = &cobra.Command{
 	Use:   "server",
 	Short: "Launch CNI Cleanner Server",

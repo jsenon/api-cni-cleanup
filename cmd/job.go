@@ -40,6 +40,7 @@ var urlserver string
 var autodiscover bool
 
 // serveCmd represents the serve command
+// nolint: dupl
 var jobCmd = &cobra.Command{
 	Use:   "job",
 	Short: "Job Cleanner",
@@ -68,7 +69,8 @@ var jobCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(jobCmd)
-	jobCmd.Flags().StringVar(&urlserver, "urlserver", "http://myserver1:9010/cleanup,http://myserver2:9010/cleanup", "Set URL of cni api server")
+	jobCmd.Flags().StringVar(&urlserver, "urlserver", "http://myserver1:9010/cleanup,http://myserver2:9010/cleanup",
+		"Set URL of cni api server")
 	jobCmd.Flags().BoolVar(&autodiscover, "autodiscover", false, "Manage auto discovery of API CNI Server")
 	err := viper.BindPFlag("urlserver", jobCmd.Flags().Lookup("urlserver"))
 	if err != nil {
@@ -94,7 +96,7 @@ func Job() {
 		}
 	case false:
 		log.Debug().Msg("Manual discovery")
-		err := urlmanu(ctx)
+		err := urlmanu()
 		if err != nil {
 			log.Error().Msgf("Error URL Manu func: %v", err.Error())
 		}
@@ -113,7 +115,7 @@ func urlauto(ctx context.Context) error {
 		log.Fatal().Msg("Error listing pod")
 		return err
 	}
-	for _, n := range pods.Items {
+	for _, n := range pods.Items { // nolint: gocritic
 		if strings.HasPrefix(n.Name, "api-cni-cleanup") {
 			log.Debug().Msgf("PodName: %s", n.Name)
 			log.Debug().Msgf("PodIP: %s", n.Status.PodIP)
@@ -148,7 +150,7 @@ func urlauto(ctx context.Context) error {
 }
 
 // urlmanu will call API CNI Server with manual url declaration
-func urlmanu(ctx context.Context) error {
+func urlmanu() error {
 	_, span := trace.StartSpan(context.Background(), "(*cniserver).urlmanu")
 	defer span.End()
 	log.Debug().Msg("In func urlmanu")
@@ -160,36 +162,42 @@ func urlmanu(ctx context.Context) error {
 		u, err := url.Parse(n)
 		if err != nil {
 			log.Error().Msgf("Error parsing url %s", err.Error())
+			return err
 		}
 		log.Debug().Msgf("Extracted Hostname: %s", u.Hostname())
 		_, err = net.LookupIP(u.Hostname())
 		if err != nil {
 			log.Error().Msgf("Error Lookup: %s", err.Error())
-		} else {
-			// Contact API Server
-			client := &http.Client{}
-			req, err := http.NewRequest("POST", n, nil)
-			if err != nil {
-				log.Error().Msgf("Error on NewRequest: %s", err.Error())
-			}
-			resp, err := client.Do(req)
-			if err != nil {
-				log.Error().Msgf("Error call server %s", err.Error())
-			}
-			defer resp.Body.Close() //nolint: errcheck
-
-			log.Info().Msgf("Response status: %s", resp.Status)
-			log.Debug().Msgf("Response Headers: %s", resp.Header)
-			body, err := ioutil.ReadAll(resp.Body)
-			if err != nil {
-				log.Error().Msgf("Error read body %s", err.Error())
-			}
-			log.Info().Msgf("Response Body: %s", string(body))
-			err = resp.Body.Close()
-			if err != nil {
-				log.Error().Msgf("Error close body %s", err.Error())
-			}
+			return err
 		}
+		// Contact API Server
+		client := &http.Client{}
+		req, err := http.NewRequest("POST", n, nil)
+		if err != nil {
+			log.Error().Msgf("Error on NewRequest: %s", err.Error())
+			return err
+		}
+		resp, err := client.Do(req)
+		if err != nil {
+			log.Error().Msgf("Error call server %s", err.Error())
+			return err
+		}
+		defer resp.Body.Close() //nolint: errcheck
+
+		log.Info().Msgf("Response status: %s", resp.Status)
+		log.Debug().Msgf("Response Headers: %s", resp.Header)
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			log.Error().Msgf("Error read body %s", err.Error())
+			return err
+		}
+		log.Info().Msgf("Response Body: %s", string(body))
+		err = resp.Body.Close()
+		if err != nil {
+			log.Error().Msgf("Error close body %s", err.Error())
+			return err
+		}
+
 	}
 	return nil
 }
