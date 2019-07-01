@@ -36,9 +36,8 @@ jobs:
       - run: 
           name: Lint
           command: |
-            go get -u github.com/alecthomas/gometalinter
-            gometalinter --install
-            gometalinter ./... --vendor --deadline=1800s
+            go get github.com/golangci/golangci-lint/cmd/golangci-lint@v1.15
+            golangci-lint run
       - run: 
           name: Code Coverage
           command: |

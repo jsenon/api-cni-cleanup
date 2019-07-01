@@ -71,7 +71,7 @@ func Cleanner(ctx context.Context, api string, cnifiles string) error { // nolin
 	}
 
 	// log.Debug().Msgf("Debug", pods.Items)
-	for _, n := range pods.Items {
+	for _, n := range pods.Items { // nolint: gocritic
 		log.Debug().Msgf("PodName: %s", n.Name)
 		log.Debug().Msgf("NodeName: %s", n.Spec.NodeName)
 		log.Debug().Msgf("PodIP: %s", n.Status.PodIP)
